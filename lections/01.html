@@ -1,0 +1,273 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Лекция 01: Алгоритмы поиска и их сложность</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>Алгоритмизация и Программирование</h3>
+                    <div>&nbsp;</div>
+                    <h4>Дерендяев Александр Борисович</h4>
+                </section>
+                <section>
+                    <section>
+                        <h4>Задача поиска</h4>
+                        <p>Даны упорядоченный массив $a_1 &lt; a_2 &lt; \ldots &lt; a_n$ и число $x$.
+                        <p>Задача: найти $i$ такой, что $a_i = x$ при условии, что он существует.
+                    </section>
+                    <section>
+                        <h4>Задача поиска</h4>
+                        <pre><code data-trim class="python">
+                        def find(needle, haystack):
+                            assert needle in haystack
+                            for i in range(len(haystack)-1):
+                                assert haystack[i] &lt; haystack[i+1]
+                            # Реализация алгоритма
+                            assert haystack[result] == needle
+                            return result
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Тривиальное решение</h4>
+                        <ol>
+                            <li>Пусть $i \leftarrow 1$</li>
+                            <li>Если $a_i = x$ вернуть ответ $i$</li>
+                            <li>Иначе $i \leftarrow i + 1$ и вернуться к шагу 2</li>
+                        </ol>
+                    </section>
+                    <section>
+                        <h4>Тривиальное решение</h4>
+                        <pre><code data-trim class="python">
+                        def find(needle, haystack):
+                            i = 0
+                            while i &lt; len(haystack) - 1:
+                                if haystack[i] == needle:
+                                    return i
+                                i = i + 1
+                            return i
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Тривиальное решение</h4>
+                        <pre><code data-trim class="python">
+                        def find(needle, haystack):
+                            i = 0
+                            while i &lt; len(haystack):
+                                if haystack[i] == needle:
+                                    return i
+                                i = i + 1
+                            return None
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Тривиальное решение</h4>
+                        <pre><code data-trim class="python">
+                        def find(needle, haystack):
+                            for i in range(len(haystack)):
+                                if haystack[i] == needle:
+                                    return i
+                            return None
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Библиотечное решение</h4>
+                        <pre><code data-trim class="python">
+                        def find(needle, haystack):
+                            return haystack.index(needle)
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Сложность алгоритма</h4>
+                        <p>Алгоритм $A$ имеет входные данные $x$, которые он преобразует в выходные данные $y$. Каждому набору входных данных мы обычно можем сопоставить некоторую «сложность» алгоритма $L_A(x)$.</p>
+                    </section>
+                    <section>
+                        <h4>Максимальная сложность</h4>
+                        <p>Получить точную зависимость сложности от входных данных обычно не удаётся. Вместо этого входные данные «измеряются» одним числом $n$. В этом случае мы можем измерять максимальную или среднюю сложность для всех $x$, задаваемых числом $n$: $L_A(n)$.
+                    </section>
+                    <section>
+                        <h4>Единицы измерения сложности</h4>
+                        <ul>
+                            <li>Арифметические операции</li>
+                            <li>Операции сравнения</li>
+                            <li>Обращения к памяти</li>
+                            <li>Занимаемая память</li>
+                            <li>Логические элементы</li>
+                            <li>Время выполнения на эталонном вычислителе</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Сложность тривиального решения</h4>
+                        <p>Выберем в качестве единицы измерения сложности число сравнений. Входные данные будем характеризовать длиной массива.
+                        <p>В худшем случае $L_A(n) = n-1$.
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Класс алгоритмов</h4>
+                        <ul>
+                            <li>Рассмотрим детерминированные алгоритмы. Каждый алгоритм вначале сравнивает $x$ с $a_i$, при чём $i$ не зависит от $x$.</li>
+                            <li>В зависимости от результата сравнения выбирается следующий индекс $j$ следующего элемента с которым сравнивается $x$.</li>
+                        </ul>
+                    </section><section>
+                        <h4>Дерево решений</h4>
+                        <ul>
+                            <li>Для фиксированной длины массива алгоритм поиска можно описать как бинарное дерево.</li>
+                            <li>Каждой его вершине, кроме листьев, приписан индекс элемента, с которым происходит сравнение на этом шаге.</li>
+                            <li>Каждому листу приписан индекс элемента, равного $x$.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Сложность</h4>
+                        <ul><li>Обозначим $L_A(a_i, n)$ сложность алгоритма, когда $a_i = x$.</li>
+                            <li>Тогда сложность (в худшем случае) равна \[L_A(n) = \max_{i=\overline{1,n}} L_A(a_i, n).\]</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Дерево</h4>
+                        <img src="tree.png">
+                    </section>
+                    <section>
+                        <h4>Дерево</h4>
+                        <img src="binary.jpeg">
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <img src="correct1.png">
+                    </section>
+                    <section>
+                        <img src="bad1.png">
+                    </section>
+                    <section>
+                        <img src="bad2.png">
+                    </section>
+                    <section>
+                        <img src="bad3.png">
+                    </section>
+                    <section>
+                        <img src="bad4.png">
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Теорема</h4>
+                        Существует алгоритм с $L_A(n) = \lceil \log_2 n \rceil$.
+                        Для доказательства приведём алгоритм «бинарного поиска».
+                    </section>
+                    <section>
+                        <h4>Доказательство</h4>
+                        Императивный алгоритм
+                        <ol><li>$l_1 \leftarrow 1$, $l_2 \leftarrow n$</li>
+                            <li>$k \leftarrow \lfloor \frac{l_1 + l_2}{2} \rfloor$</li>
+                            <li>Если $x &lt; a_k$, то $l_2 \leftarrow k-1$</li>
+                            <li>Иначе $l_1 \leftarrow k$</li>
+                            <li>Если $l_1 = l_2$, выдать ответ $l_1$</li>
+                            <li>Иначе перейти к шагу 2</li>
+                        </ol>
+                    </section>
+                    <section>
+                        <h4>Доказательство</h4>
+                        Фунциональный алгоритм
+                        <ul><li>Если $n = 1$, выдать ответ $x = a_1$.</li>
+                            <li>Сравнить $x$ с $a_k$, где $k = \lfloor \frac{n}{2} \rfloor$.</li>
+                            <li>Если $x \leq a_k$, рекуррентно осуществить поиск среди $a_1 &lt; \ldots &lt; a_k$</li>
+                            <li>Иначе рекуррентно осуществить поиск среди $a_{k+1} &lt; \ldots &lt; a_n$</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Доказательство</h4>
+                        <ul><li>Длина массива для рекуррентного поиска не превышает $\lceil\frac{n}{2}\rceil$</li>
+                            <li>Значит сложность равна $L_A(n) = 1 + L_A(\lceil\frac{n}{2}\rceil)$</li>
+                            <li>Докажем, что для $2^{m-1} &lt; n \leq 2^{m}$ сложность $L_A(n) = m$ с помощью математической индукции.
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Доказательство</h4>
+                        <ul><li>При $m=0$, $n=1$ получаем $L_A(1) = 0$.</li>
+                            <li>Пусть утверждение верно для $m$ и $2^{m-1} &lt; n \leq 2^m$: $L_A(n) = m$.</li>
+                            <li>Докажем для $m^* = m+1$ и $n^*=2n$, то есть для $2^m &lt; n^* \leq 2^{m+1}$.</li>
+                            <li>Тогда $2^{m-1} &lt; \lceil \frac{n^*}{2} \rceil \leq 2^m$, а значит $L_A(\lceil \frac{n^*}{2} \rceil) = m$.</li>
+                            <li>Следовательно $L_A(n^*) = m + 1 = m^*$, что и требовалось доказать.</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <ul><li>Глубиной $h(x)$ листа $x$ в дереве $D$ будем называть число рёбер в пути из корня до $x$.</li>
+                        <li>Высотой дерева $h(D)$ будем называть максимальную глубину его листьев.</li>
+                    </ul>
+                </section>
+                <section>
+                    <section>
+                        <h4>Лемма</h4>
+                        Для любого бинарного дерева, имеющего $n$ листьев, выполняются неравенства:
+                        \[ h(D) \geq \lceil \log_2 n \rceil \]
+                    </section>
+                    <section>
+                        <h4>Доказательство</h4>
+                        <ul><li>Любое дерево высоты $h$ можно достроить до полного бинарного дерева высоты $h$.</li>
+                            <li>Для этого нужно к каждому листу $x$ высоты $h(x)$ «доклеить» полное бинарное дерево высоты $h - h(x)$.</li>
+                            <li>Данная операция увеличивает число листьев, но не увеличивает высоту дерева.</li>
+                            <li>Полное бинарное дерево высоты $h$ имеет $2^h$ листьев.</li>
+                            <li>Следовательно число листьев $n$ исходного дерева не превышает $2^h$ или $h \geq \log_2 n$.
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <h4>Теорема</h4>
+                    Для любого алгоритма $A$ поиска в упорядоченном массиве справедливы оценки:
+                    \[ L_A(n) \geq \lceil \log_2 n \rceil \]
+
+                    Следовательно, алгоритм бинарного поиска оптимален по сложности.
+                </section>
+                <section>
+                    <section>
+                        <p>А что, если сравнение элементов может вернуть три значения: &lt;, &gt;, =?</p>
+                        <p><emph>N.B.</emph>C++ и Python используют только &lt;</p>
+                    </section>
+                    <section>
+                        <ul><li>Тогда во всех решение может быть принято в любом узле дерева, а не только в его листьях.</li>
+                            <li>Листья составляют более половины узлов дерева, поэтому задействование всех узлов позволит уменьшить число узлов менее чем вдвое, а высоту не более чем на 1.</li>
+                            <li>Таким образом число операций сравнения может быть уменьшено на 1.</li>
+                        </ul>
+                    </section>
+                </section>
+            </div>
+        </div>
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2 ]
+			});
+		</script>
+	</body>
+</html>

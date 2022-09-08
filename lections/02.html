@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Лекция 02: Введение в асимптотическую сложность</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>Лекция 02: Введение в асимптотическую сложность</h3>
+                    <div>&nbsp;</div>
+                    <h4>Дерендяев Александр Борисович</h4>
+                </section>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/function-plot/1.22.7/function-plot.js" integrity="sha512-MUHYAU7vRlaN0MVTEVPuh99xifmHD9kmqV9ehc8UYtsd99B+dP2TRT/N5wPTyocj9+/NSOgsS4u5cL5gTPl9eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                <section>
+                    <section>
+                        <h4>Рост сложности</h4>
+                        <div><span id="quadratic" class="graph"></span></div>
+                        <script>
+                            document.addEventListener('reveal-ready', function(e) {
+                                functionPlot({
+                                    target: '#quadratic',
+                                    data: [{
+                                        fn: 'x'
+                                    }, {
+                                        fn: 'x^2/30'
+                                    }]
+                                });
+                            });
+                        </script>
+                    </section><section>
+                        <h4>Рост сложности 2</h4>
+                        <div><span id="linear" class="graph"></span></div>
+                        <script>
+                            document.addEventListener('reveal-ready', function(e) {
+                                functionPlot({
+                                    target: '#linear',
+                                    width: 800,
+                                    height: 600,
+                                    data: [{
+                                        fn: '1.5*x'
+                                    }, {
+                                        fn: 'x+sqrt(x)'
+                                    }]
+                                });
+                            });
+                        </script>
+                    </section>
+                </section>
+                <section>
+                    <img src="big-o-complexity-chart.png">
+                </section>
+                <section>
+                    <section>
+                        <h4>Обзор обозначений</h4>
+                        <img src="bigO-comparison.png">
+                    </section>
+                    <section>
+                        <h4>Пояснения</h4>
+                        <ul><li>$f(n) \in o\left(g(n)\right)$ — если долго уменьшать масштаб, $f(n)$ станет ниже $g(n)$ в правой части графика</li>
+                            <li>$f(n) \in \Theta\left(g(n)\right)$ — если долго уменьшать масштаб, график перестанет меняться</li>
+                            <li>$O$ — объединение $o$ и $\Theta$</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Формальное определение $О$</h4>
+                        <ul>
+			    <li>$О$ позволяет найти асимптотическую верхную границу.</li>
+			    <li>$f(n) = O(g(n))$, если существуют константы $c>0, N_0>0$, такие что $f(n)\leq c \times g(n)$  для всех $N\geq N_0$.</li>
+                            <li>Важно, как растет $f(n)$ при больших значениях $n$. Малые значения $n$ или какие-то определенные точки не важны.</li>
+                            <li>Можно говорить, что $f(n)$ растет не быстрее $g(n)$.</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h4>Сложность</h4>
+                        <ul>
+			    <li>$О(1) \leq O(log(n)) \leq O(n) \leq O(n \times log(n)) \leq$ ... $\leq O(n^2) \leq O(n^100) \leq O(2^n)$</li>
+			    <li>Формула Стирлинга $lg(n!) = n\times lg(n) - n + o(log(n))$ или $n!=\left\frac{n}{e}\right^{n}$</li>
+                            <li>Число сочетаний</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Тест</h4>
+                        <img src="complex_task.png">
+                    </section>
+                </section>
+            </div>
+        </div>
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+            Reveal.addEventListener( 'ready', function(event) {
+                document.dispatchEvent(new Event('reveal-ready'));
+            });
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2 ]
+			});
+		</script>
+	</body>
+</html>
