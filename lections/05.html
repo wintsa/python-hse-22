@@ -1,0 +1,600 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 05: Основные методы разработки алгоритмов</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    <style>
+        .reveal table.code td {
+            border-bottom:0;
+        }
+        .red {
+            color: red;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h3>Лекция 05: Основные методы разработки алгоритмов</h3>
+            <div>&nbsp;</div>
+            <h4>Александр Дерендяев</h4>
+        </section>
+        <section>
+            <section>
+                <h4>Основные методы разработки алгоритмов</h4>
+                <ul>
+                    <li><strong>Метод грубой силы</strong><br>(brute force, исчерпывающий поиск — полный перебор</li>
+                    <li><strong>Декомпозиция</strong> (decomposition, "разделяй и властвуй")</li>
+                    <ul>
+                        <li><strong>Уменьшение размера задачи</strong> ("уменьшай и властвуй")</li>
+                        <li><strong>Преобразование</strong> ("преобразуй и властвуй")</li>
+                    </ul>
+                    <li><strong>Жадные алгоритмы</strong> (greedy algorithms)</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Основные методы разработки алгоритмов</h4>
+                <ul>
+                    <li><span style="color:green">✔</span><strong>Динамическое программирование</strong> (dynamic
+                        programming)
+                    </li>
+                    <li><strong>Поиск с возвратом</strong> (backtracking)</li>
+                    <li><strong>Локальный поиск</strong> (local search)</li>
+                    <li><strong>...</strong></li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод грубой силы (brute force)</h4>
+                <ul>
+                    <li>Метод грубой силы (brute force) — решение "в лоб"</li>
+                    <li>Основан на прямой подходе к решению задачи</li>
+                    <li>Опирается на определения понятий, используемых в постановке задачи</li>
+                </ul>
+                <div><strong>Пример</strong>
+                    <p>Задача возведения числа $a$ в неотрицательную степень $n$.</p>
+                    <p>Алгоритм решения "в лоб". По определению $a^n = \underbrace{a \cdot a \cdot \ldots \cdot
+                        a}_\textrm{n}$</p>
+                </div>
+            </section>
+            <section>
+                <h4>Метод грубой силы (brute force)</h4>
+                <p>Из определения следует простейший алгоритм</p>
+                <pre><code data-trim data-noescape data-line-numbers="1-5|3|4|1-5">
+def code(a, n):
+	pow = 1
+	for i in range(n):
+		pow = pow * a
+	return pow
+</code></pre>
+                <p class="fragment">$T_{pow}=O(n)$</p>
+            </section>
+            <section>
+                <h4>Метод грубой силы (brute force)</h4>
+                <p>Примеры алгоритмов, основаные на методе грубой силы</p>
+                <ul>
+                    <li>Умножение матриц по определнию $O(n^3)$</li>
+                    <li>Линейный поиск наибольшего/наименьшего элемента в списке</li>
+                    <li>Сортировка выбором (selection sort, $O(n^2)$)</li>
+                    <li>Пузырьковая сортировка (bubble sort, $O(n^2)$)</li>
+                    <li>Поиск подстроки в строке методом грубой силы</li>
+                    <li>Поиск перебором пары ближайших точек на плоскости</li>
+                    <li>...</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Поиск подстроки в строке (String match)</h4>
+                <p>Поиск подстроки $p$ в строке $s$ методом грубой силы:</p>
+                <img src="06/bf-search.png">
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def strcmp(s, p):
+	n = len(s)
+	m = len(p)
+	for i in range(n - m):
+		j = 0
+		while j < m and s[i + j] == p[j]:
+			j = j + 1
+		if j == m:
+			return i
+	return None
+</code></pre>
+                <p class="fragment">$T_{strcmp}=O(n*m)$</p>
+            </section>
+            <section>
+                <h4>Поиск пары ближайших точек (Closest points)</h4>
+                <p><strong>Задача.</strong> Во множестве из n точек необходимо найти две, расстояние между которыми
+                    минимально (точки ближе других друг к другу)</p>
+                <p>Координаты всех точек известны: $P_i = (x_i, y_i)$</p>
+                <p>Расстояние $d(i, j)$ между парой точек вычисляется как евклидово:</p>
+                $d(i, j) = \sqrt{(x_i – x_j)^2 + (y_i – y_j)^2}$
+            </section>
+            <section>
+                <h4>Поиск пары ближайших точек (Closest points)</h4>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+import math
+def SearchClosestPoints(x, y):
+	dmin = float("inf")
+	(imin, jmin) = (None, None)
+	for i in range(len(x)):
+		for j in range(i + 1, len(x)):
+			d = math.sqrt((x[i] - x[j])**2 +(y[i] - y[j])**2)
+			if d < dmin:
+				dmin = d
+				imin = i
+				jmin = j
+	return (imin, jmin)
+</code></pre>
+                <p class="fragment">Какова вычислительная сложность алгоритма?</p>
+                <p class="fragment">$T=O(n^2)$</p>
+            </section>
+        </section>
+        <section>
+            <h4>Жадные алгоритмы (Greedy)</h4>
+            <p><strong> “Жадный” алгоритм (Greedy algorithms)</strong> — алгоритм, принимающий на каждом шаге
+                локально-оптимальное решение.
+            </p>
+            <p>Предполагается, что конечное решение окажется оптимальным.</p>
+            <p>Примеры “жадных” алгоритмов:</p>
+            <ul>
+                <li>алгоритм Прима</li>
+                <li>алгоритм Краскала</li>
+                <li>алгоритм Дейкстры</li>
+                <li>алгоритм Хаффмана (кодирования)</li>
+            </ul>
+        </section>
+        <section>
+            <section>
+                <h4>Задача о размене (Change-making problem)</h4>
+                <h6>Задача</h6>
+                <p>Имеется неограниченное количество монет номиналом (достоинством) $a_1 < a_2 < \ldots < a_n$</p>
+                <h6>Требуется</h6>
+                <p>Выдать сумму $S$ наименьшим числом монет</p>
+            </section>
+            <section>
+                <h6>Пример</h6>
+                <p>Имеются монеты достоинством 1, 2, 5 и 10 рублей. Выдать сумму $S = 27$ рублей </p>
+                <h6>“Жадное” решение (алгоритм):</h6>
+                <p>2 монеты по 10 руб., 1 по 5, 1 по 2.</p>
+                <p>На каждом шаге берётся наибольшее возможное количество монет достоинства $a_n$ (от большего к
+                    меньшему)</p>
+            </section>
+            <section>
+                <h6>Пример</h6>
+                <p>Имеются монеты достоинством 1, 5 и 7 рублей. Выдать сумму $S = 24$ рублей </p>
+                <h6>“Жадное” решение:</h6>
+                <p>3 по 7, 3 по 1 = <span style="color:red">6 монет</span>.</p>
+                <h6>Оптимальное решение:</h6>
+                <p>2 по 7, 2 по 5 = <span style="color:green">4 монеты</span>.</p>
+                <a target="_blank" href="https://www.cs.usfca.edu/~galles/visualization/DPChange.html">Динамика</a>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Код Хаффмана</h4>
+                <p>Деревья Хаффмана (Huffman) и коды Хаффмана используются для сжатия информации путем кодирования часто
+                    встречающихся символов короткими последовательностями битов</p>
+                <p>Предложен Д. А. Хаффманом в 1952 году (США, MIT)</p>
+            </section>
+            <section>
+                <h6>Задано</h6>
+                <p>множество символов и известны вероятности
+                    их появления в тексте (в файле)</p>
+                <p>$A = \{a_1, a_2, \ldots, a_n\}$ – множество символов (алфавит)</p>
+                <p>$P = \{p_1, p_2, \ldots, p_n\}$ – вероятности появления символов</p>
+                <h6>Требуется</h6>
+                <p>каждому символу сопоставить код – последовательность битов (codeword):</p>
+                <p>$С(A, P) = \{c_1, c_2, \ldots, c_n\}$</p>
+            </section>
+            <section>
+                <ul>
+                    <li><strong>Шаг 1.</strong>
+                        Создается $n$ одноузловых деревьев. В каждом узле записан символ алфавита и вероятность его
+                        повеления в тексте.
+                    </li>
+                </ul>
+                <a target="_blank" href="https://opendsa-server.cs.vt.edu/OpenDSA/Books/Everything/html/Huffman.html">Визуализация</a>
+            </section>
+            <section>
+                <ul>
+                    <li><strong>Шаг 2.</strong>
+                        Находим два дерева с наименьшими вероятностями и делаем их левым и правым поддеревьями нового
+                        дерева – создаем родительский узел.
+                        В созданном узле записываем сумму вероятностей поддеревьев.
+                        Повторяем шаг 2 пока не получим одно дерево.
+                    </li>
+                </ul>
+                <p style="color:red">На каждом шаге осуществляется “жадный выбор” –
+                    выбираем два узла с наименьшими вероятностями</p>
+            </section>
+        </section>
+        <section>
+            <h4>Алгоритм Дейкстры</h4>
+            <p><a target="_blank" href="https://visualgo.net/en/sssp?slide=1-4">Визуализация</a>
+            </p>
+        </section>
+        <section>
+            <section>
+                <h4>Поиск с возвратом (Backtracking)</h4>
+                <p><strong>Поиск с возвратом (Backtracking)</strong> – метод решения
+                    задач, в которых необходим полный перебор всех
+                    возможных вариантов в некотором множестве М</p>
+                <p>“Построить все возможные варианты …”,
+                    “Сколько существует способов …”, “Есть ли способ …”</p>
+                <p>Термин Backtrack введен в 1950 г. D. H. Lehmer</p>
+            </section>
+            <section>
+                <h6>Поиск с возвратом (Backtracking)</h6>
+                <p><strong>Примеры задач</strong></p>
+                <ul>
+                    <li>Задача коммивояжёра</li>
+                    <li>Подбор пароля</li>
+                    <li>Задача о восьми ферзях</li>
+                    <li>Задача о ранце</li>
+                    <li>Раскраска карты</li>
+                </ul>
+            </section>
+            <section>
+                <h6>Общая структура метода backtracking</h6>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def backtracking(int step):
+    save_variant()
+    if is_solution_found():
+        print_solution()
+        quit()
+
+    for variant in variants:
+        if is_correct_variant():
+            backtracking(step + 1)
+
+    delete_variant()
+
+backtracking(1)
+</code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h6>Поиск выхода из лабиринта</h6>
+                <table style="color:green; border-bottom: 0" class="code">
+                    <tr>
+                        <td>6</td>
+                        <td>9</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td class="red">0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </section>
+            <section>
+                <h6>Поиск выхода из лабиринта</h6>
+                <table style="color:green; border-bottom: 0" class="code">
+                    <tr>
+                        <td>6</td>
+                        <td>9</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td class="red">2</td>
+                        <td class="red">2</td>
+                        <td class="red">2</td>
+                        <td class="red">2</td>
+                        <td class="red">2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td class="red">2</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="red">2</td>
+                        <td class="red">2</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td class="red">2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td class="red">2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Задача о восьми ферзях (eight queens puzzle)</h4>
+                <p><strong>Классическая формулировка</strong></p>
+                <p>Расставить на стандартной
+                    64-клеточной шахматной доске
+                    8 ферзей (королев) так, чтобы
+                    ни один из них не находился
+                    под боем другого
+                </p>
+                <img src="05/8queens.png">
+            </section>
+            <section>
+                <h6>Задача о восьми ферзях (eight queens puzzle)</h6>
+                <p>Задача впервые была решена в 1850 г.
+                    Карлом Фридрихом Гаубом
+                    (Carl Friedrich Gaub)
+                </p>
+                <p> Число возможных решений
+                    на 64-клеточной доске: 92
+                </p>
+            </section>
+            <section>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/R8bM6pxlrLY"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Задача о раскраске графа в k цветов</h4>
+                <p>Имеется граф $G = (V, E)$ состоящий из $n$ вершин</p>
+                <p>Каждую вершину надо раскрасить в один из $k$ цветов
+                    так, чтобы смежные вершины были раскрашены
+                    в разные цвета
+                </p>
+            </section>
+            <section>
+                <p>Пример раскраски 10 вершин графа в 3 цвета</p>
+                <img src="05/color.png" width="50%">
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Локальный поиск (local search)</h4>
+                <p><strong>Локальный поиск (Local search)</strong> – это метод
+                    приближенного решения оптимизационных задач
+                </p>
+                <p>Жертвуем точностью решения для сокращения времени
+                    работы алгоритма</p>
+            </section>
+            <section>
+                <p>Примеры методов локального поиска</p>
+                <ul>
+                    <li>Имитация отжига (Simulated annealing)</li>
+                    <li>Генетические алгоритмы (Genetic algorithms)</li>
+                    <li>Поиск с запретами (Tabu search)</li>
+                    <li>..</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Метод локального поиска</h4>
+                <img src="05/local-search.jpg">
+            </section>
+            <section>
+                <h6>Общая структура метода локального поиска</h6>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def LocalSearch():
+    x = InitialSolution()
+    xn = GenerateNewSolution(x)
+    if F(xn) < F(x):
+        x = xn
+    while not ExitCondition(x, xn):
+        xn = GenerateNewSolution(x)
+        if F(xn) < F(x):
+            x = xn
+    return x
+</code></pre>
+            </section>
+        </section>
+        <section>
+            <p>Introduction to the Design and Analysis of Algorithms</p>
+            <p>(c) Anany Levitin</p>
+        </section>
+    </div>
+</div>
+<script src="dist/reveal.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script src="plugin/math/math.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.addEventListener('ready', function (event) {
+        document.dispatchEvent(new Event('reveal-ready'));
+    });
+    Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

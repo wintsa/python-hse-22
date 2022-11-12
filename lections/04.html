@@ -1,0 +1,64 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Лекция 04: Динамическое программирование</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>Лекция 04: Динамическое программирование</h3>
+                    <div>&nbsp;</div>
+                    <h4>Александр Дерендяев</h4>
+                </section>
+                <section>
+                    <h4>Постановка задачи</h4>
+                    <div>Кузнечик прыгает по горизонтали вправо от точки 0 либо на 1 или на 2</div>
+                    <div>Сколько вариантов маршрутов есть у него, чтобы допрыгать до точки $n$?</div>
+                </section>
+                <section>
+                    <section>
+                        <h4>План построения алгоритма</h4>
+                        <ol>
+                            <li>Посчитать для малых значений.</li>
+                            <li>Определить $i$-ый элемент.</li>
+                            <li>Вывести рекуррентное соотношение.</li>
+                            <li>Ограничения и начальные значения.</li>
+                            <li>Порядок вычисления элементов.</li>
+                            <li>Вычисление ответа.</li>
+                        </ol>
+                    </section>
+                </section>
+            </div>
+        </div>
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+            Reveal.addEventListener( 'ready', function(event) {
+                document.dispatchEvent(new Event('reveal-ready'));
+            });
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2 ]
+			});
+		</script>
+	</body>
+</html>

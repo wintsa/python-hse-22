@@ -1,0 +1,254 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 06: Разделяй и властвуй</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h3>Лекция 06: Разделяй и властвуй</h3>
+            <div>&nbsp;</div>
+            <h4>Александр Дерендяев</h4>
+        </section>
+        <section>
+            <section>
+                <h4>Основные методы разработки алгоритмов</h4>
+                <ul>
+                    <li><span style="color:green">✔</span><strong>Метод грубой силы</strong><br>(brute force,
+                        исчерпывающий поиск — полный перебор
+                    </li>
+                    <li><strong>Декомпозиция</strong> (decomposition, "разделяй и властвуй")</li>
+                    <ul>
+                        <li><strong>Уменьшение размера задачи</strong> ("уменьшай и властвуй")</li>
+                        <li><strong>Преобразование</strong> ("преобразуй и властвуй")</li>
+                    </ul>
+                    <li><span style="color:green">✔</span><strong>Жадные алгоритмы</strong> (greedy algorithms)</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Основные методы разработки алгоритмов</h4>
+                <ul>
+                    <li><span style="color:green">✔</span><strong>Динамическое программирование</strong> (dynamic
+                        programming)
+                    </li>
+                    <li><span style="color:green">✔</span><strong>Поиск с возвратом</strong> (backtracking)</li>
+                    <li><span style="color:green">✔</span><strong>Локальный поиск</strong> (local search)</li>
+                    <li><strong>...</strong></li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <h1>Метод декомпозиции</h1>
+            <h2>«Разделяй и властвуй»</h2>
+        </section>
+        <section>
+            <p>Структура алгоритмов, основанных на этом методе:</p>
+            <ol>
+                <li>Задача разбивается на несколько меньших экземпляров той же задачи</li>
+                <li>Решаются сформированные меньшие экземпляры задачи (обычно рекурсивно)</li>
+                <li>При необходимости решение исходной задачи формируется как комбинация решений меньших экземпляров
+                    задачи
+                </li>
+            </ol>
+            Иногда размер подзадач меньше размера исходной задачи в несколько раз.
+        </section>
+        <section>
+            <section>
+                <h6>Вычисление суммы чисел</h6>
+                <strong>Задача.</strong> Вычислить сумму чисел $a_0, a_1, \ldots, a_{n–1}$
+                Алгоритм на основе метода грубой силы (brute force, по определению):
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def sum(a):
+    sum = 0
+    for i in range(len(a)):
+        sum = sum + a[i]
+    return sum
+                </code></pre>
+                <p class="fragment">$T_{sum}=O(n)$</p>
+            </section>
+            <section>
+                <h6>Вычисление суммы чисел (декомпозиция)</h6>
+                <strong>Задача.</strong> Вычислить сумму чисел $a_0, a_1, \ldots, a_{n–1}$
+                Алгоритм на основе метода декомпозиции:
+                $$a_0 + a_1 + \cdots + a_{n-1} = \\
+                = (a_0 + \cdots + a_{\lfloor \frac{n}{2} \rfloor-1}) + (a_{\lfloor \frac{n}{2} \rfloor}+ \cdots +
+                a_{n-1})$$
+                $$4 + 5 + 1 + 9 + 13 + 11 + 7 =\\
+                = (4 + 5 + 1) + (9 + 13 + 11 + 7) =\\
+                = ((4) + (5 + 1)) + ((9 + 13) + (11 + 7)) = 50$$
+            </section>
+            <section>
+                <h6>Вычисление суммы чисел (декомпозиция)</h6>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def sum_r(a, l, r):
+    if l==r:
+        return a[l]
+    m = (r + l) / 2
+    return sum_r(a, l, m - 1) + sum_r(a, m, r)
+
+def sum_list(a):
+    return sum_r(a, 0, len(a)-1)
+                </code></pre>
+            </section>
+            <section>
+                <h6>Вычисление суммы чисел</h6>
+                <p>Структура рекурсивных вызовов sum(0,6)</p>
+                <img src="06/decomp-sum.png" height="50%" width="50%">
+                $$4 + 5 + 1 + 9 + 13 + 11 + 7 =\\
+                = (4 + 5 + 1) + (9 + 13 + 11 + 7) =\\
+                = ((4) + (5 + 1)) + ((9 + 13) + (11 + 7)) = 50$$
+            </section>
+        </section>
+        <section>
+            <section>
+                <h6>Метод декомпозиции (Decomposition)</h6>
+                <div class="r-stack">
+                    <ul class="fragment fade-out">
+                        <li>В общем случае задача размера $n$ делится на экземпляры задачи размера $n / b$, из которых
+                            $a$ требуется решить ($b > 1, a ≥ 0$)
+                        </li>
+                        <li>Время $T(n)$ работы алгоритмы, основанного на методе декомпозиции, равно
+                            $$T(n) = aT(n / b) + f(n),$$
+                            где f(n) – функция, учитывающая затраты времени на разделение задачи на экземпляры и
+                            комбинирование их решений
+                        </li>
+                    </ul>
+                    <p class="fragment">
+                        Рекуррентное соотношение – это обобщённое рекуррентное уравнение декомпозиции (general
+                        divide-and-conquer recurrence)
+                        $$T(n) = aT(n / b) + f(n),$$
+                    </p>
+                </div>
+            </section>
+            <section>
+                <h6>Теорема</h6>
+                Пусть $T(n): \mathbb{N} \rightarrow \mathbb{R}$, $k,b \in \mathbb{N}, b \geq 2, a,c,\alpha \in
+                \mathbb{R}, a &gt; 0, n = b^k$
+                \[ T(n) \leq a T\left(\frac{n}{b} \right) + c n^{\alpha} \]
+                И при этом $T(n)$ монотонно не убывает на каждом $[b^k+1, b^{k+1}]$. Тогда при $n \rightarrow \infty$
+                выполняется:
+            </section>
+            <section>
+                \[ T(n) \leq a T\left(\frac{n}{b} \right) + c n^{\alpha} \]
+                \[
+                T(n) = \begin{cases}
+                O(n^{\alpha}), &amp; \alpha &gt; \log_b a \\
+                O(n^{\log_b a}), &amp; \alpha &lt; \log_b a \\
+                O(n^{\alpha} \log n), &amp; \alpha = \log_b a \\
+                \end{cases}
+                \]
+            </section>
+        </section>
+        <section>
+            <h6>Алгоритм суммирования $n$ чисел</h6>
+            <ul>
+                <li>$b = 2$ (интервал делим на 2 части)</li>
+                <li>$а = 2$ (обе части обрабатываем)</li>
+                <li>$f(n) = 1$ (трудоемкость разделения интервала на 2 подмножества
+                    и слияние результатов (операция “+”) выполняется
+                    за время O(1))
+                    $T(n) = 2T(n / 2) + 1 = 2T(n / 2) + 1 * n^0$
+                </li>
+                <li>Так как $\alpha = 0 < 1 = log_b a$, тогда согласно теореме сложность алгоритма
+                    суммирования $n$ чисел
+                    $$T(n)=\theta(n^{log_2 2})=\theta(n)$$
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h6>Примеры алгоритмов, основанных на методе декомпозиции</h6>
+            <ul>
+                <li>Сортировка слиянием (MergeSort)</li>
+                <li>Быстрая сортировка (QuickSort)</li>
+                <li>Бинарный поиск (Binary Search)</li>
+                <li>Обход бинарного дерева (Tree traverse)</li>
+                <li>Решение задачи о поиске пары ближайших точек</li>
+                <li>Решение задачи о поиске выпуклой оболочки</li>
+                <li>Умножение матриц алгоритмом Штрассена</li>
+                <li>...</li>
+            </ul>
+        </section>
+        <section>
+            <section>
+                <h3>Алгоритм Карацубы</h3>
+                Для умножения двух двоичных $n$-разрядных чисел существует алгоритм с битовой сложностью $O(n^{\log_2
+                3})$.
+            </section>
+            <section>
+                <h6>Алгоритм Карацубы</h6>
+                <p>Два $n$-битовых числа можно представить в виде $ax+b$, $cx+d$</p>
+                <p>Используя тождество
+                    $\color{green}{(a+b)(c+d)}=\color{red}{ac}+\color{darkorange}{(ad+bc)}+\color{blue}{bd}$,
+                    произведение можно представить в виде</p>
+                $$(ax+b)(cx+d)=\color{red}{ac}x^2+\color{darkorange}{(ad+bc)}x+\color{blue}{bd}=\\
+                =\color{red}{ac}x^2+\color{darkorange}{\Big
+                (}\color{green}{(a+b)(c+d)}-\color{red}{ac}-\color{blue}{bd}\color{darkorange}{\Big )}x+\color{blue}{bd}
+                $$
+            </section>
+            <section>
+                <img src="06/Karatsuba-algorithm.png">
+            </section>
+            <section>
+                <img src="06/Karatsuba_multiplication.svg" width="70%" height="70%">
+            </section>
+            <section>
+                <h6>Сложность алгоритма Карацубы</h6>
+                \[ T(2n) \leq 3 T(n) + O(n) \]
+                \[ T(n) = O(n^{\log_2 3}) \]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h3>Задача поиска минимального расстояния между точками</h3>
+            </section>
+            <section>
+                <h6>Разделяем на две части</h6>
+                <img src="06/pair-1.png">
+                \[ T(n) = 2*T(n/2) + f(n) \]
+            </section>
+            <section>
+                <h6>Объединяем результаты</h6>
+                <img src="06/pair-2.png">
+                \[ f(n) = O(n) \]
+            </section>
+            <section>
+                <h6>Сложность алгоритма поиска минимального расстояния между точками</h6>
+                \[ T(n) = 2*T(n/2) + O(n) \]
+                \[ T(n) = O(n^{\log_2 2}) = O(n) \]
+            </section>
+        </section>
+    </div>
+</div>
+<script src="dist/reveal.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script src="plugin/math/math.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.addEventListener('ready', function (event) {
+        document.dispatchEvent(new Event('reveal-ready'));
+    });
+    Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
+    });
+
+</script>
+</body>
+</html>

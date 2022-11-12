@@ -1,0 +1,125 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Лекция 03: Сортировка</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>Лекция 03: Сортировка</h3>
+                    <div>&nbsp;</div>
+                    <h4>Александр Дерендяев</h4>
+                </section>
+                <section>
+                    <h4>Постановка задачи</h4>
+                    <div><i>Вход:</i> последовательность различных чисел $a_1, a_2, \ldots, a_n$</div>
+                    <div><i>Выход:</i> перестановка $i_1, \ldots, i_n$, такая что $a_{i_1} &lt; a_{i_2} &lt; \ldots &lt; a_{i_n}$</div>
+                </section>
+                <section>
+                    <section>
+                        <h4>Класс алгоритмов</h4>
+                        <ul>
+                            <li>На каждом шаге либо сравнивается пара элементов $(i,j)$, при чём номера элементов определяются лишь результатами предыдущих сравнений,</li>
+                            <li>либо выдаётся ответ.</li>
+                            <li>Такой алгоритм можно представить в виде дерева решений.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <img src="sort1.png">
+                    </section>
+                    <section>
+                        <img src="sort2.png">
+                    </section>
+                </section>
+                <section>
+                    <h4>Сложность</h4>
+                    <p>Сложностью $L_A(n)$ алгоритма сортировки называется максимальное число сравнений</p>
+                    <p><span class="theorem">Теорема</span> $L_A(n) \geq \log_2 n! = (1 - o(1))n \log_2 n$</p>
+                </section>
+                <section>
+                    <h4>Сортировка вставками</h4>
+                    <ul>
+                        <li>Пусть даны элементы $a_1 &lt; a_2 &lt; \ldots &lt; a_k$ и $a_{k+1}$.</li>
+                        <li>С помощью бинарного поиска найдём «место» для $a_{k+1}$.</li>
+                        <li>Вставим его на это место, изменив порядок элементов.</li>
+                        <li>Перейдём к элементу $a_{k+2}$.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h4>Сложность сортировки вставками</h4>
+                    \begin{align}
+                    L_{ins}(n) &amp;= \sum_{k=2}^{n} \lceil \log_2 k \rceil \\
+                           &amp;\leq \sum_{k=2}^{n} \log_2 k + n - 1\\
+                           &amp;=\log_2 n! + n - 1 \\
+                           &amp;=(1 + o(1))n \log_2 n
+                    \end{align}
+                </section>
+                <section>
+                    <h4>Сортировка слиянием</h4>
+                    <ul>
+                        <li>Разделим входную последовательность пополам и отсортируем половинки.</li>
+                        <li>«Сольём» отсортированные половинки:
+                            <ul>
+                                <li>Возьмём первые элементы из обеих половинок</li>
+                                <li>Меньший из них удалим из половинки и добавим к выходной последовательности</li>
+                                <li>Будем повторять предыдущие шаги, пока одна половинка не опустеет</li>
+                                <li>После этого допишем оставшиеся элементы в конец выходной последовательности</li>
+                            </ul></li>
+                    </ul>
+                </section>
+                <section>
+                    <h4>Сложность сортировки слиянием</h4>
+                    <ul>
+                        <li>$L_{merge}(n) = L_{merge}(\lfloor \frac{n}{2} \rfloor) + L_{merge}(\lceil \frac{n}{2} \rceil) + n - 1$</li>
+                        <li>$L_{merge}(n) = n \log_2 n - n + 1$ для $n = 2^k$</li>
+                    </ul>
+                </section>
+                <section>
+                    <h4>Доказательство</h4>
+                    <ul>
+                        <li>Для $k=0$ - очевидно $L_{merge}(n) = 0$</li>
+                        <li>Пусть $L_{merge}(n) = n \log_2 n - n + 1$</li>
+                        <li>Тогда
+                            \begin{align}
+                            L_{merge}(2n) &amp;= 2L_{merge}(n) + 2n - 1 \\
+                            &amp;= 2 n \log_2 n - 2n + 2 + 2n - 1 \\
+                            &amp;= 2 n (\log_2 n + 1) - 2n + 1 \\
+                            &amp;= 2 n \log_2 (2n) - 2n + 1
+                            \end{align}
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+            Reveal.addEventListener( 'ready', function(event) {
+                document.dispatchEvent(new Event('reveal-ready'));
+            });
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2 ]
+			});
+		</script>
+	</body>
+</html>

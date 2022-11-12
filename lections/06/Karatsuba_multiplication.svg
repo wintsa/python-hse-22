@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="-15 -1250 2000 2000">
+ <title>Karatsuba multiplication</title>
+ <desc>Karatsuba multiplication of az+b and cz+d (boxed), and 1234 and 567 by CMG Lee. Magenta arrows denote multiplication, amber denotes addition, silver denotes subtraction and cyan denotes shift. (A), (B) and (C) show recursion used to obtain intermediate values.</desc>
+ <style type="text/css">
+  #main  { font-family:Courier New,Courier,monospace; font-size:50px; text-anchor:end;
+           fill:#000000; stroke:none; stroke-linecap:round; }
+  text   { stroke:none; }
+  .algebraic, .shift, .operator
+                { font-family:Helvetica,Arial,sans-serif; text-anchor:middle; }
+  .intermediate { font-size:80px; font-weight:bold; }
+  .operator     { font-size:50px; }
+  .arrow        { fill:none; stroke-width:20; }
+  .add          { stroke:#ffee00; }
+  .multiply     { stroke:#ff99ff; }
+  .subtract     { stroke:#cccccc; }
+  .shift        { font-size:40px; fill:#0066cc; stroke:#99eeff; }
+  .value        { font-weight:bold; filter:url(#filter_glow); }
+  .a            { fill:#666666; }
+  .b            { fill:#ff0000; }
+  .c            { fill:#00cc00; }
+  .d            { fill:#0000ff; }
+  .ab           { fill:#cc0000; }
+  .cd           { fill:#009999; }
+  .abcd         { fill:#666666; }
+  .ac           { fill:#009900; }
+  .bd           { fill:#990099; }
+  .acbd         { fill:#333333; }
+  .bcad         { fill:#999999; }
+  .z            { fill:#00ccff; }
+  .ans          { fill:#000000; }
+ </style>
+ <defs>
+  <filter id="filter_shadow">
+   <feOffset in="SourceAlpha" dx="6" dy="6" />
+   <feGaussianBlur stdDeviation="8"/>
+   <feBlend in="SourceGraphic"/>
+  </filter>
+  <filter id="filter_glow">
+   <feMorphology in="SourceAlpha" radius="4" operator="dilate"/>
+   <feColorMatrix type="matrix" values="0,0,0,0,1 0,0,0,0,1 0,0,0,0,1 0,0,0,0.75,0"/>
+   <feBlend in="SourceGraphic"/>
+  </filter>
+  <filter id="filter_bold">
+   <feMorphology in="SourceGraphic" radius="1" operator="dilate"/>
+  </filter>
+  <circle id="operator" r="10"/>
+  <g id="add" class="operator">
+   <use xlink:href="#operator"/>
+   <text y="0.7ex" fill="#ff6600">+</text>
+  </g>
+  <g id="add1" class="arrow add">
+   <path d="M 30,0 H 470 m -20,-20 l 20,20 l -20,20"/>
+   <use xlink:href="#add" x="200"/>
+  </g>
+  <g id="add2" class="arrow add">
+   <path d="M 0,70 V 360 m -20,-20 l 20,20 l 20,-20"/>
+   <use xlink:href="#add" y="150"/>
+   <use xlink:href="#add" y="250"/>
+  </g>
+  <g id="multiply" class="operator" transform="translate(0,150)">
+   <use xlink:href="#operator"/>
+   <text y="0.7ex" fill="#cc00cc">&#215;</text>
+  </g>
+  <g id="multiply1" class="arrow multiply">
+   <path d="M 0,60 V 360 m -20,-20 l 20,20 l 20,-20"/>
+   <use xlink:href="#multiply"/>
+  </g>
+  <g id="multiply2" class="arrow multiply">
+   <path d="M 0,60 V 260 m -20,-20 l 20,20 l 20,-20"/>
+   <use xlink:href="#multiply"/>
+  </g>
+  <g id="subtract" class="arrow subtract">
+   <path d="M 0,70 V 260 m -20,-20 l 20,20 l 20,-20"/>
+   <g class="operator" transform="translate(0,150)">
+    <use xlink:href="#operator"/>
+    <text y="0.7ex" fill="#666666">&#8722;</text>
+   </g>
+  </g>
+  <g id="shift1" class="arrow shift">
+   <path d="M 55,370 q -10,140 145,130 m -20,-20 l 20,20 l -20,20" fill="none"/>
+   <ellipse cx="95" cy="459" rx="60" ry="10"/>
+  </g>
+  <g id="shift2" class="arrow shift">
+   <path d="M 575,470 q 10,140 -150,130 m 20,-20 l -20,20 l 20,20" fill="none"/>
+   <ellipse cx="540" cy="562" rx="50" ry="10"/>
+  </g>
+  <g id="common">
+   <use xlink:href="#add1"      y="100"/>
+   <use xlink:href="#add1"      y="200"/>
+   <use xlink:href="#add1"      y="400"/>
+   <use xlink:href="#multiply1"  x="75"/>
+   <use xlink:href="#multiply1" x="375"/>
+   <use xlink:href="#multiply2" x="575"/>
+   <use xlink:href="#subtract"  x="550" y="200"/>
+   <use xlink:href="#add2"      x="350" y="300"/>
+   <use xlink:href="#shift1"/>
+   <use xlink:href="#shift2"/>
+  </g>
+ </defs>
+ <circle cx="0" cy="0" r="99999" fill="#ffffff"/>
+ <g id="main">
+  <g transform="scale(1.5)">
+   <g class="algebraic" transform="translate(-20,-850)">
+    <rect x="30" y="40" width="670" height="750" fill="#f8f8f8" stroke="#000000" filter="url(#filter_shadow)"/>
+    <use xlink:href="#common" x="25"/>
+    <text class="value a"    transform="translate(100,100)" y="0.7ex">a</text>
+    <text class="value b"    transform="translate(400,100)" y="0.7ex">b</text>
+    <text class="value c"    transform="translate(100,200)" y="0.7ex">c</text>
+    <text class="value d"    transform="translate(400,200)" y="0.7ex">d</text>
+    <text class="value ab"   transform="translate(600,100)" y="0.7ex">a+b</text>
+    <text class="value cd"   transform="translate(600,200)" y="0.7ex">c+d</text>
+    <text class="value abcd" transform="translate(570,300)" y="0.7ex">(a+b)(c+d)</text>
+    <text class="value ac"   transform="translate(100,400)" y="0.7ex">ac</text>
+    <text class="value bd"   transform="translate(400,400)" y="0.7ex">bd</text>
+    <text class="value acbd" transform="translate(580,400)" y="0.7ex">ac+bd</text>
+    <text class="value bcad" transform="translate(580,500)" y="0.7ex">bc+ad</text>
+    <text class="value bcad" transform="translate(330,600)" y="0.7ex"><tspan>(bc+ad)</tspan><tspan class="z">z</tspan></text>
+    <text class="value ac"   transform="translate(380,500)" y="0.7ex"><tspan>ac</tspan><tspan class="z">z&#178;</tspan></text>
+    <text class="value ans"  transform="translate(350,700)" y="0.7ex"><tspan>acz&#178; + bcz + adz + bd</tspan><tspan x="0" dy="2ex">= (az+b)(cz+d)</tspan></text>
+    <text class="shift"      transform="translate(115,458)" y="0.7ex">&#215; z&#178;</text>
+    <text class="shift"      transform="translate(565,558)" y="0.7ex">&#215; z</text>
+   </g>
+   <g transform="translate(715,-770)">
+    <use xlink:href="#common" x="-5"/>
+    <text class="value a"    transform="translate(100,100)" y="0.7ex">12</text>
+    <text class="value b"    transform="translate(400,100)" y="0.7ex">34</text>
+    <text class="value c"    transform="translate(100,200)" y="0.7ex">05</text>
+    <text class="value d"    transform="translate(400,200)" y="0.7ex">67</text>
+    <text class="value ab"   transform="translate(600,100)" y="0.7ex">46</text>
+    <text class="value cd"   transform="translate(600,200)" y="0.7ex">72</text>
+    <text class="value abcd" transform="translate(600,300)" y="0.7ex">3312</text>
+    <text class="value ac"   transform="translate(100,400)" y="0.7ex">60</text>
+    <text class="value bd"   transform="translate(400,400)" y="0.7ex">2278</text>
+    <text class="value acbd" transform="translate(600,400)" y="0.7ex">2338</text>
+    <text class="value bcad" transform="translate(600,500)" y="0.7ex">974</text>
+    <text class="value bcad" transform="translate(400,600)" y="0.7ex"><tspan>974</tspan><tspan class="z">00</tspan></text>
+    <text class="value ac"   transform="translate(400,500)" y="0.7ex"><tspan>60</tspan><tspan class="z">0000</tspan></text>
+    <text class="value ans"  transform="translate(400,700)" y="0.7ex">699678</text>
+    <text class="value ans"  transform="translate(325,-20)" y="0.7ex" text-anchor="middle">1234 &#215; 567 = ?</text>
+    <text class="shift"      transform="translate( 80,460)" y="0.7ex">&#215;100&#178;</text>
+    <text class="shift"      transform="translate(530,560)" y="0.7ex">&#215;100</text>
+    <text class="shift ac"   transform="translate( 15,350)" y="0.7ex">(A)</text>
+    <text class="shift bd"   transform="translate(305,340)" y="0.7ex">(B)</text>
+    <text class="shift abcd" transform="translate(505,240)" y="0.7ex">(C)</text>
+   </g>
+  </g>
+  <g class="intermediate">
+   <g>
+    <use xlink:href="#common"/>
+    <text class="value a"    transform="translate(100,100)" y="0.7ex">1</text>
+    <text class="value b"    transform="translate(400,100)" y="0.7ex">2</text>
+    <text class="value c"    transform="translate(100,200)" y="0.7ex">0</text>
+    <text class="value d"    transform="translate(400,200)" y="0.7ex">5</text>
+    <text class="value ab"   transform="translate(600,100)" y="0.7ex">3</text>
+    <text class="value cd"   transform="translate(600,200)" y="0.7ex">5</text>
+    <text class="value abcd" transform="translate(600,300)" y="0.7ex">15</text>
+    <text class="value ac"   transform="translate(100,400)" y="0.7ex">0</text>
+    <text class="value bd"   transform="translate(400,400)" y="0.7ex">10</text>
+    <text class="value acbd" transform="translate(600,400)" y="0.7ex">10</text>
+    <text class="value bcad" transform="translate(600,500)" y="0.7ex">5</text>
+    <text class="value bcad" transform="translate(400,600)" y="0.7ex"><tspan>5</tspan><tspan class="z">0</tspan></text>
+    <text class="value ac"   transform="translate(400,500)" y="0.7ex"><tspan>0</tspan><tspan class="z">00</tspan></text>
+    <text class="value ans"  transform="translate(400,700)" y="0.7ex">60</text>
+    <text class="shift"      transform="translate( 90,460)" y="0.7ex">&#215;10&#178;</text>
+    <text class="shift"      transform="translate(540,560)" y="0.7ex">&#215;10</text>
+    <text class="shift ac"   transform="translate( 40, 10) scale(1.4)" y="0.7ex">(A)</text>
+   </g>
+   <g transform="translate(680,0)">
+    <use xlink:href="#common"/>
+    <text class="value a"    transform="translate(100,100)" y="0.7ex">3</text>
+    <text class="value b"    transform="translate(400,100)" y="0.7ex">4</text>
+    <text class="value c"    transform="translate(100,200)" y="0.7ex">6</text>
+    <text class="value d"    transform="translate(400,200)" y="0.7ex">7</text>
+    <text class="value ab"   transform="translate(600,100)" y="0.7ex">7</text>
+    <text class="value cd"   transform="translate(600,200)" y="0.7ex">13</text>
+    <text class="value abcd" transform="translate(600,300)" y="0.7ex">91</text>
+    <text class="value ac"   transform="translate(100,400)" y="0.7ex">18</text>
+    <text class="value bd"   transform="translate(400,400)" y="0.7ex">28</text>
+    <text class="value acbd" transform="translate(600,400)" y="0.7ex">46</text>
+    <text class="value bcad" transform="translate(600,500)" y="0.7ex">45</text>
+    <text class="value bcad" transform="translate(400,600)" y="0.7ex"><tspan>45</tspan><tspan class="z">0</tspan></text>
+    <text class="value ac"   transform="translate(400,500)" y="0.7ex"><tspan>18</tspan><tspan class="z">00</tspan></text>
+    <text class="value ans"  transform="translate(400,700)" y="0.7ex">2278</text>
+    <text class="shift"      transform="translate( 90,460)" y="0.7ex">&#215;10&#178;</text>
+    <text class="shift"      transform="translate(540,560)" y="0.7ex">&#215;10</text>
+    <text class="shift bd"   transform="translate( 40, 10) scale(1.4)" y="0.7ex">(B)</text>
+   </g>
+   <g transform="translate(1360,0)">
+    <use xlink:href="#common"/>
+    <text class="value a"    transform="translate(100,100)" y="0.7ex">4</text>
+    <text class="value b"    transform="translate(400,100)" y="0.7ex">6</text>
+    <text class="value c"    transform="translate(100,200)" y="0.7ex">7</text>
+    <text class="value d"    transform="translate(400,200)" y="0.7ex">2</text>
+    <text class="value ab"   transform="translate(600,100)" y="0.7ex">10</text>
+    <text class="value cd"   transform="translate(600,200)" y="0.7ex">9</text>
+    <text class="value abcd" transform="translate(600,300)" y="0.7ex">90</text>
+    <text class="value ac"   transform="translate(100,400)" y="0.7ex">28</text>
+    <text class="value bd"   transform="translate(400,400)" y="0.7ex">12</text>
+    <text class="value acbd" transform="translate(600,400)" y="0.7ex">40</text>
+    <text class="value bcad" transform="translate(600,500)" y="0.7ex">50</text>
+    <text class="value bcad" transform="translate(400,600)" y="0.7ex"><tspan>50</tspan><tspan class="z">0</tspan></text>
+    <text class="value ac"   transform="translate(400,500)" y="0.7ex"><tspan>28</tspan><tspan class="z">00</tspan></text>
+    <text class="value ans"  transform="translate(400,700)" y="0.7ex">3312</text>
+    <text class="shift"      transform="translate( 90,460)" y="0.7ex">&#215;10&#178;</text>
+    <text class="shift"      transform="translate(540,560)" y="0.7ex">&#215;10</text>
+    <text class="shift abcd" transform="translate( 40, 10) scale(1.4)" y="0.7ex">(C)</text>
+   </g>
+  </g>
+ </g>
+</svg>
