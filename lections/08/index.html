@@ -1,0 +1,478 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 08: Амортизационный анализ</title>
+
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="../plugin/highlight/monokai.css">
+    <style>
+.reveal .slides section .fragment.step-fade-in-then-out {
+	opacity: 0;
+	display: none;
+	}
+.reveal .slides section .fragment.step-fade-in-then-out.current-fragment {
+	opacity: 1;
+	display: inline;
+	}
+#inc {
+    display: inline-block;
+    border: 1px white solid;
+    border-radius: 2rem;
+    padding: 0 20px
+}
+.bval {
+    font-weight: 500;
+}
+#bl {
+    display: inline-block;
+    padding-left: 2em;
+}
+table.stack {
+    margin-bottom: 1em;
+}
+table.stack, table.stack tr td {
+  border: 1px solid;
+  border-collapse: collapse;
+}
+table.stack tr td {
+    min-width: 6rem;
+    height: 4rem;
+}
+#stackMP{
+    width: 3rem;
+}
+.stackBut {
+    display: inline-block;
+    border: 1px white solid;
+    border-radius: 2rem;
+    padding: 0 20px
+}
+input {
+    height: 2rem;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+
+
+
+
+    </style>
+    <script>
+        const L = 5
+        let val = 0
+        A = Array.apply(null, Array(L)).map(i=>0)
+        const setA = (i, v) => {
+            A[i] = v
+            const td = document.getElementById('b'+i)
+            td.style.color = 'red';
+            td.innerHTML = v
+        }
+        const clear = () => {
+            bl.innerHTML = val+'=>'+(val+1)
+            val = val + 1
+            A.forEach((v,i) => document.getElementById('b'+i).style.color = 'white')
+        }
+        const inc = () => {
+            let i = 0
+            clear()
+            while(i<L && A[i]==1) {
+                setA(i, 0)
+                i = i + 1
+            }
+            if(i<L)
+                setA(i, 1)
+        }
+
+
+
+
+
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h3>Лекция 08: Амортизационный анализ</h3>
+            <div>&nbsp;</div>
+            <h4>Александр Дерендяев</h4>
+        </section>
+        <section>
+            <section>
+                <h4>Анализ вычислительной сложности алгоритмов</h4>
+                <ol>
+                    <li>Определяем <em>параметры</em> алгоритма, от которых зависит время его выполнения
+                        \[
+                        n, m
+                        \]
+                    </li>
+                </ol>
+            </section>
+            <section>
+                <h4>Анализ вычислительной сложности алгоритмов</h4>
+                <ol start="2">
+                    <li>Выражаем количество операций, выполняемых алгоритмом, как <em>функцию от его параметров</em>
+                        (для худшего, среднего или лучшего случаев)
+                        \[
+                        T(n, m) = 2n^2 + 4\log_2 m
+                        \]
+                    </li>
+                </ol>
+            </section>
+            <section>
+                <h4>Анализ вычислительной сложности алгоритмов</h4>
+                <ol start="3">
+                    <li>Строим <em>асимптотическую оценку</em> вычислительной сложности алгоритма – переходим к
+                        асимптотическим обозначениям: $O, \Omega, \Theta$
+                        \[
+                        T(n, m) = O(2n^2 + 4\log_2 m) = O(\max{n^2,\log_2 m})
+                        \]
+                    </li>
+                </ol>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Анализ сортировки выбором (худший случай)</h4>
+                <pre><code data-trim data-noescape data-line-numbers="1-9|2|4|6-7|8-9|2,4,6-7,8-9" class="python">
+def selection_sort(v):
+    n = len(v)
+    for i in range(n - 1):
+        min = i
+        for j in range(i + 1, n):
+            if v[j] < v[min]:
+                min = j
+        if min != i:
+            v[i], v[min] = v[min], v[i]
+                </code></pre>
+            </section>
+            <section>
+                <h4>Анализ сортировки выбором (худший случай)</h4>
+                <pre><code data-trim data-noescape data-line-numbers="2,4,6-7,8-9" class="python">
+def selection_sort(v):
+    n = len(v) # 1 операция
+    for i in range(n - 1):
+        min = i # 1 операция
+        for j in range(i + 1, n):
+            if v[j] < v[min]: # 2 операции
+                min = j
+        if min != i: # 4 операции
+            v[i], v[min] = v[min], v[i]
+                </code></pre>
+                <p class="fragment step-fade-in-then-out">$T(n) = 1 + \ldots$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + \ldots$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + 4(n-1) + \ldots$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + 4(n-1) + 2((n-1) + (n-2) + \ldots +
+                    1)$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = 4n - 4 + 2((n-1+1)(n-1)/2)$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = 4n - 4 + n^2 -n$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = n^2 -4n-4$</p>
+                <p class="fragment step-fade-in-then-out">$T(n) = O(n^2)$</p>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20selection_sort%28v%29%3A%0A%20%20%20%20n%20%3D%20len%28v%29%0A%20%20%20%20for%20i%20in%20range%28n%20-%201%29%3A%0A%20%20%20%20%20%20%20%20min%20%3D%20i%0A%20%20%20%20%20%20%20%20for%20j%20in%20range%28i%20%2B%201,%20n%29%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20v%5Bj%5D%20%3C%20v%5Bmin%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20min%20%3D%20j%0A%20%20%20%20%20%20%20%20if%20min%20!%3D%20i%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20v%5Bi%5D,%20v%5Bmin%5D%20%3D%20v%5Bmin%5D,%20v%5Bi%5D%0A%20%20%20%20%20%20%20%20%20%20%20%20%0Aselection_sort%28%5B4,%2011,%202,%200%5D%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=36&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Бинарный счетчик (binary counter)</h4>
+                <ul>
+                    <li>Счетчик имеет длину $L$ бит (может принимать $2^L$ значений)</li>
+                    <li>Поддерживает операцию Increment, которая увеличиваетего значение на единицу</li>
+                    <li>Начальное значение счетчика — 0</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Пример 5-разрядного бинарного счетчика</h4>
+                <span id='inc' onclick="inc()">Increment: </span><label id="bl">0</label>
+                <table>
+                    <tr>
+                        <td>Разряд</td>
+                        <td>4</td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Вес</td>
+                        <td>16</td>
+                        <td>8</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Значение</td>
+                        <td id="b4" class="bval">0</td>
+                        <td id="b3" class="bval">0</td>
+                        <td id="b2" class="bval">0</td>
+                        <td id="b1" class="bval">0</td>
+                        <td id="b0" class="bval">0</td>
+                    </tr>
+                </table>
+            </section>
+            <section>
+                <h4>Бинарный счетчик (binary counter)</h4>
+                <pre><code data-trim data-noescape data-line-numbers="1-7|3-5" class="python">
+def inc(A):
+    i = 0
+    while i < L and A[i]==1:
+        A[i] = 0
+        i = i + 1
+    if i < L:
+        A[i] = 1
+                </code></pre>
+                <p class="fragment step-fade-in-then-out">Заменяем начальную последовательность единиц нулями (перенос в
+                    старший разряд)</p>
+                <p class="fragment step-fade-in-then-out">При каждом вызове функции Increment время ее работы разное и
+                    зависит от внутреннего состояния – значений <code>A[1..L]</code></p>
+                <p class="fragment">Вычислительная сложность функции Increment?</p>
+            </section>
+            <section>
+                <h4>Бинарный счетчик (binary counter)</h4>
+                <p>В худшем случае массив <code>A[1..L]</code> состоит только из единиц,
+                    для выполнения операции Increment требуется время <code>O(L)</code></p>
+                <p style="color: red" class="fragment">Это пессимистическая оценка!</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Амортизационный анализ</h4>
+                <p><strong>Амортизационный анализ (amortized analysis)</strong> —
+                    метод анализа алгоритмов, позволяющий осуществлять
+                    оценку времени выполнения последовательности из $n$
+                    операций над некоторой структурой данных</p>
+                <p>Время выполнения усредняется по всем $n$ операциям,
+                    и оценивается <em>среднее</em> время выполнения одной операции
+                    <em>в худшем случае</em></p>
+            </section>
+            <section>
+                <h4>Амортизационный анализ</h4>
+                <p>Некоторые операции структуры данных могут иметь
+                    высокую вычислительную сложность, другие низкую</p>
+                <p>Например, некоторая операция может подготавливать
+                    структуру данных для быстрого выполнения других
+                    операций</p>
+                <p>Такие «тяжелые» операции выполняются редко и могут
+                    оказывать незначительное влияние на суммарное время
+                    выполнения последовательности из $n$ операций</p>
+            </section>
+            <section>
+                <h4>Амортизационный анализ</h4>
+                <p>Амортизационный анализ возник из группового анализа
+                    (aggregate analysis)</p>
+                <p>Введен в практику Робертом Тарьяном (Robert Tarjan)
+                    в 1985 году:</p>
+                <p style="font-style: oblique 40deg;">Tarjan R. Amortized Computational Complexity // SIAM. J. on
+                    Algebraic and Discrete Methods, 6(2), 1985. – P. 306–318.</p>
+            </section>
+            <section>
+                <h4>Методы амортизационного анализа</h4>
+                <ul>
+                    <li>Групповой анализ (aggregate analysis)</li>
+                    <li>Метод бухгалтерского учета (accounting method)</li>
+                    <li>Метод потенциалов (potential method)</li>
+                </ul>
+                <p class="fragment">Все методы позволяют получить одну и ту же оценку, но разными способами</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Групповой анализ (аggregate analysis)</h4>
+                <p class="fragment step-fade-in-then-out"><strong>Групповой анализ (aggregate analysis)</strong> —
+                    метод амортизационного анализа, позволяющий
+                    оценивать верхнюю границу времени $T(n)$ выполнения
+                    последовательности из $n$ операций в худшем случае</p>
+                <p class="fragment"><strong>Амортизированная стоимость (amortized cost, учетная
+                    стоимость)</strong> выполнения одной операции определяется как \[T(n)/n\]</p>
+                <p class="fragment">Амортизированная стоимость операции – это оценка
+                    сверху среднего времени выполнения операции в худшем
+                    случае</p>
+            </section>
+            <section>
+                <h4>Стековые операции (Last In – First Out)</h4>
+                <table class="stack">
+                    <tr>
+                        <td id="t0">↓Top</td>
+                        <td id="t1"></td>
+                        <td id="t2"></td>
+                        <td id="t3"></td>
+                        <td id="t4"></td>
+                        <td id="t5"></td>
+                        <td id="t6"></td>
+                        <td id="t7"></td>
+                    </tr>
+                    <tr>
+                        <td id="v0"></td>
+                        <td id="v1"></td>
+                        <td id="v2"></td>
+                        <td id="v3"></td>
+                        <td id="v4"></td>
+                        <td id="v5"></td>
+                        <td id="v6"></td>
+                    </tr>
+                </table>
+                <script>
+                    let stackI = 0
+                    const stackL = 7
+                    const push = () => {
+                        if(stackI>=stackL) return;
+                        document.getElementById('t'+stackI).innerHTML = ''
+                        document.getElementById('v'+stackI).innerHTML = stackPushValue.value
+                        stackI++;
+                        document.getElementById('t'+stackI).innerHTML = '↓Top'
+                    }
+                    const pop = () => {
+                        if(stackI<=0) return;
+                        document.getElementById('t'+stackI).innerHTML = ''
+                        stackI--;
+                        popValue.innerHTML = document.getElementById('v'+stackI).innerHTML
+                        document.getElementById('v'+stackI).innerHTML = ''
+                        document.getElementById('t'+stackI).innerHTML = '↓Top'
+                    }
+                    const _pop = () => {
+                        if(stackI<=0) return;
+                        document.getElementById('t'+stackI).innerHTML = ''
+                        stackI--;
+                        multiValue.innerHTML = (multiValue.innerHTML==''?'':multiValue.innerHTML+',')+document.getElementById('v'+stackI).innerHTML
+                        document.getElementById('v'+stackI).innerHTML = ''
+                        document.getElementById('t'+stackI).innerHTML = '↓Top'
+                    }
+                    const multi = () => {
+                        const n = stackMP.value
+                        multiValue.innerHTML = ''
+                        for(let i=0;i<n;i++)
+                            _pop()
+                    }
+
+
+
+
+
+                </script>
+                <ul>
+                    <li><span class='stackBut' id="push" onclick="push()">Push</span>: <input id="stackPushValue"
+                                                                                              maxlength="4" size="4">
+                    </li>
+                    <li><span class='stackBut' id="pop" onclick="pop()">Pop</span>: <label id="popValue"></label></li>
+                    <li><span class='stackBut' id="multi" onclick="multi()">Multipop</span><input id="stackMP"
+                                                                                                  type="number"
+                                                                                                  value="2">:<br><label
+                            id="multiValue"></label></li>
+                </ul>
+            </section>
+            <section>
+                <h4>Стековые операции (Last In – First Out)</h4>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def MultiPop(S, k):
+    while not stack_empty(S) and k > 0:
+        stack_pop(S)
+        k = k – 1
+                </code></pre>
+                <p class="fragment">$T_{MultiPop} = O(\min(|S|, k))$</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Групповой анализ стековых операций v1.0</h4>
+                <p>Методом группового анализа оценим верхнюю границу
+                    времени $T(n)$ выполнения произвольной последовательности
+                    из $n$ стековых операций (Push, Pop, MultiPop)</p>
+            </section>
+            <section>
+                <h4>Групповой анализ стековых операций v1.0</h4>
+                <ol>
+                    <li>Стоимость операции Pop равна $O(1)$</li>
+                    <li>Стоимость операции Push равна $O(1)$</li>
+                    <li>Стоимость операции MultiPop в худшем случае $O(n)$,
+                        так как в ходе выполнения $n$ операций в стеке не может
+                        находится более $n$ объектов
+                    </li>
+                </ol>
+            </section>
+            <section>
+                <h4>Групповой анализ стековых операций v1.0</h4>
+                <p>В худшем случае последовательность из $n$ операций может
+                    содержать только операции MultiPop</p>
+                <p>Тогда, суммарное время $T(n)$ выполнения $n$ операций есть $O(n^2)$, а амортизированная стоимость
+                    одной операции</p>
+                \[O(n^2)/n=O(n)\]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Групповой анализ стековых операций v2.0</h4>
+                <p>Количество операций Pop (включая вызовы из MultiPop)
+                    не превышает количества операций Push. В свою очередь,
+                    число операций Push не превышает $n$ (операция MultiPop
+                    реализована на базе Pop)</p>
+                <p>Таким образом для выполнения произвольной
+                    последовательности из $n$ операций Push, Pop, MultiPop
+                    требуется время $O(n)$</p>
+            </section>
+            <section>
+                <h4>Групповой анализ стековых операций v2.0</h4>
+                <p>Суммарное время выполнения $n$ операций в худшем случае есть
+                    $O(n)$, тогда амортизированная стоимость (средняя стоимость)
+                    одной операции над стеком есть</p>
+                \[O(n)/n=O(1)\]
+            </section>
+            <section>
+                <h4>Групповой анализ стековых операций</h4>
+                <p>Останется ли справедливой оценка
+                    амортизированной стоимости стековых
+                    операций, равная $О(1)$, если включить в
+                    множество стековых операций операцию
+                    MultiPush(S, k), помещающую в стек $k$
+                    элементов?</p>
+                <p class="fragment" style="color:red">Нет</p>
+            </section>
+            <section>
+                <h4>Групповой анализ стековых операций</h4>
+                <p>В последовательности из $n$ стековых
+                    операций может быть $n$ операций
+                    MultiPush, что требует времени $O(nk)$</p>
+                <p>Тогда амортизированная стоимость
+                    (средняя стоимость) одной стековой
+                    операции</p>
+                \[T(n)/n = O(nk)/n = O(k)\]
+            </section>
+        </section>
+    </div>
+</div>
+<script src="../dist/reveal.js"></script>
+<script src="../plugin/notes/notes.js"></script>
+<script src="../plugin/markdown/markdown.js"></script>
+<script src="../plugin/highlight/highlight.js"></script>
+<script src="../plugin/math/math.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.addEventListener('ready', function (event) {
+        document.dispatchEvent(new Event('reveal-ready'));
+    });
+    Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
+    });
+
+
+
+
+
+</script>
+</body>
+</html>
