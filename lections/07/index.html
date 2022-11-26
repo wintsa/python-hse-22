@@ -1,0 +1,386 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 07: Алгоритмы поиска подстроки</title>
+
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="../plugin/highlight/monokai.css">
+    <style>
+.reveal .slides section .fragment.step-fade-in-then-out {
+	opacity: 0;
+	display: none;
+	}
+.reveal .slides section .fragment.step-fade-in-then-out.current-fragment {
+	opacity: 1;
+	display: inline;
+	}
+
+    </style>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h3>Лекция 07-08: Алгоритмы поиска подстроки</h3>
+            <div>&nbsp;</div>
+            <h4>Александр Дерендяев</h4>
+        </section>
+        <section>
+            <h1>Алгоритм Кнута-Морриса-Пратта</h1>
+        </section>
+        <section>
+            <section>
+                <h4>Префикс-функция</h4>
+                <p>Дана строка <code class="python">s[0:n]</code>. Требуется вычислить для неё префикс-функцию, т.е.
+                    массив чисел <code class="python">π[0:n]</code>, где <code class="python">π[i]</code> определяется
+                    следующим образом: это такая наибольшая длина наибольшего собственного суффикса подстроки <code
+                            class="python">s[0:i+1]</code>, совпадающего с её префиксом (собственный суффикс — значит не
+                    совпадающий со всей строкой). В частности, значение <code class="python">π[0]</code> полагается
+                    равным нулю.</p>
+            </section>
+            <section>
+                        <pre><code data-trim data-noescape class="python">
+def prefix(string: str) -> list:
+    result = [0]*len(string)
+    for i in range(1,len(string)+1):
+        for k in range(i):
+            if string[:k] == string[i-k:i]:
+                result[i-1] = k
+    return result
+                        </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20prefix%28string%3A%20str%29%20-%3E%20list%3A%0A%20%20%20%20result%20%3D%20%5B0%5D*len%28string%29%0A%20%20%20%20for%20i%20in%20range%281,len%28string%29%2B1%29%3A%0A%20%20%20%20%20%20%20%20for%20k%20in%20range%28i%29%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20string%5B%3Ak%5D%20%3D%3D%20string%5Bi-k%3Ai%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20result%5Bi-1%5D%20%3D%20k%0A%20%20%20%20return%20result%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0Aprefix%28'abcabcd'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=4&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+            <section>
+                <h1>Какая у такой функции сложность?</h1>
+                <h4>Тест на LMS</h4>
+            </section>
+            <section>
+                        <pre><code data-trim data-noescape data-line-numbers="1-7|3|4|5|3-5|1-7" class="python">
+def prefix(string: str) -> list:
+    result = [0]*len(string)
+    for i in range(1,len(string)+1):
+        for k in range(i):
+            if string[:k] == string[i-k:i]:
+                result[i-1] = k
+    return result
+                        </code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>Оптимизация 1</h1>
+            </section>
+            <section>
+                <p>Длина префикса не может увеличиться больше, чем на 1.</p>
+                <p>Пусть префикс-функция для подстроки длины $n$ равна 3. Тогда подстрока имеет вид "abc...abc". Но
+                    тогда подстрока длины $n-1$ имеет вид "abc...ab", а значит её префикс функция не меньше 2.</p>
+            </section>
+            <section>
+                        <pre><code data-trim data-noescape class="python">
+def prefix(string: str) -> list:
+    result = [0]*len(string)
+    for i in range(2,len(string)+1):
+        prev = result[i-2]
+        for k in range(prev+1,0,-1):
+            if string[:k] == string[i-k:i]:
+                result[i-1] = k
+                break
+    return result
+                        </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20prefix%28string%3A%20str%29%20-%3E%20list%3A%0A%20%20%20%20result%20%3D%20%5B0%5D*len%28string%29%0A%20%20%20%20for%20i%20in%20range%282,len%28string%29%2B1%29%3A%0A%20%20%20%20%20%20%20%20prev%20%3D%20result%5Bi-2%5D%0A%20%20%20%20%20%20%20%20for%20k%20in%20range%28prev%2B1,0,-1%29%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20string%5B%3Ak%5D%20%3D%3D%20string%5Bi-k%3Ai%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20result%5Bi-1%5D%20%3D%20k%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20break%0A%20%20%20%20return%20result%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0Aprefix%28'abcabcd'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=3&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+            <section>
+                Новая версия будет иметь сложность $O(n^2)$. Почему, узнаем после изучения Амортизационного анализа.
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>Оптимизация 2</h1>
+            </section>
+            <section>
+                <p>Если <code class="python">s[i+1] == s[π[i]]</code>,<br>
+                    то <code class="python">π[i+1] == π[i] + 1</code></p>
+                \[
+                \underbrace{\overbrace{s_0 \quad s_1 \quad s_2}^{\pi[i]} \quad \overbrace{\ s_3\ }^{s_3=s_{i+1}} \
+                }_{\pi[i+1]=\pi[i]+1}
+                \quad \cdots \quad
+                \underbrace{\overbrace{s_{i-2} \quad s_{i-1} \quad s_i}^{\pi[i]} \quad \overbrace{\ s_{i+1}\
+                }^{s_3=s_{i+1}} \ }_{\pi[i+1]=\pi[i]+1}
+                \]
+            </section>
+            <section>
+                <p>Если <code class="python">s[i+1] != s[π[i]]</code>, то</p>
+                \[
+                \overbrace{\underbrace{s_0 \quad s_1}_{j} \quad s_2 \quad s_3}^{\pi[i]}
+                \quad \cdots \quad
+                \overbrace{s_{i-3} \quad s_{i-2} \quad \underbrace{s_{i-1} \quad s_i}_{j}}^{\pi[i]}
+                \quad s_{i+1}
+                \]
+            </section>
+            <section>
+                        <pre><code data-trim data-noescape class="python">
+def prefix(s: str) -> list:
+    result = [0]*len(s)
+    for i in range(1,len(s)):
+        j = result[i-1]
+        while j > 0 and s[i] != s[j]:
+            j = result[j-1]
+        if s[i] == s[j]:
+            j = j + 1
+        result[i] = j
+    return result
+                        </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20prefix%28s%3A%20str%29%20-%3E%20list%3A%0A%20%20%20%20result%20%3D%20%5B0%5D*len%28s%29%0A%20%20%20%20for%20i%20in%20range%281,len%28s%29%29%3A%0A%20%20%20%20%20%20%20%20j%20%3D%20result%5Bi-1%5D%0A%20%20%20%20%20%20%20%20while%20j%20%3E%200%20and%20s%5Bi%5D%20!%3D%20s%5Bj%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20%3D%20result%5Bj-1%5D%0A%20%20%20%20%20%20%20%20if%20s%5Bi%5D%20%3D%3D%20s%5Bj%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20j%20%3D%20j%20%2B%201%0A%20%20%20%20%20%20%20%20result%5Bi%5D%20%3D%20j%0A%20%20%20%20return%20result%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0Aprefix%28'abcabcd'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=3&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+            <section>
+                Новая версия будет иметь сложность $O(n)$. Почему, узнаем после изучения Амортизационного анализа.
+            </section>
+        </section>
+        <section>
+            <h3>Демонстрация алгоритма Кнута-Морриса-Пратта</h3>
+            <h4><a target="_blank" href="http://whocouldthat.be/visualizing-string-matching/">Вариант 1</a></h4>
+            <h4><a target="_blank" href="http://jovilab.sinaapp.com/visualization/algorithms/strings/kmp">Вариант 2</a>
+            </h4>
+        </section>
+        <section>
+            <h1>Алгоритм Бойера-Мура</h1>
+        </section>
+        <section>
+            <h4>Алгоритм Бойера-Мура</h4>
+            <p>Ищем в тексте $T$ строку $S$.</p>
+            <p>Сравнивает с конца + две эвристики:</p>
+            <ol>
+                <li>Правило плохого символа</li>
+                <li>Правило хорошего суффикса</li>
+            </ol>
+        </section>
+        <section>
+            <section>
+                <h4>Правило плохого символа</h4>
+                Если у нас не совпал символ $d$: $T[i-d]!=S[m-d]$, то мы можем двигать образец вправо пока в нем не
+                совпадет символ $T[i-d]$.
+            </section>
+            <section>
+                <h4>Правило плохого символа</h4>
+                <p>Экстримальный случай: если в образце нет $T[i-d]$, то мы можем подвинуться так, чтобы поиск
+                    начинался со следующего символа.</p>
+                <p>Если есть, то надо подвинуться так, что бы <em>последний встреченный</em> был под нужным символом.
+                </p>
+                <p><small>Вариант — определять не только <em>последнего встречного</em>, но и последнего для каждого
+                    символа в образце: построить список встречных, сортированных в обратном направлении.</small></p>
+            </section>
+            <section>
+                <a target="_blank" href="http://whocouldthat.be/visualizing-string-matching/">Демонстрация</a>
+                <pre><code data-trim data-noescape class="python">
+                T = ABC ABCDAB ABCDABCDABDE
+                S = ABCDABD
+                        </code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Правило хорошего суффикса</h4>
+                <p>Если у нас не совпал символ $d$: $T[i-d]!=S[m-d]$, то это значит,что совпали остальные $d-1$
+                    символов.</p>
+                <p>Алгоритм смотрит на последнее вхождение в образце такого суффикса (с учетом несовпашего символа!) и
+                    высчитывает нужный сдвиг.</p>
+                <p>Если таких вхождений нет, то сдвигаем так, чтобы максимальный суффикс, равный префиксу, оказался
+                    под соответствующей строкой</p>
+            </section>
+            <section>
+                <a target="_blank" href="http://whocouldthat.be/visualizing-string-matching/">Демонстрация</a>
+                <pre><code data-trim data-noescape class="python">
+                T = CDABCBCDABBDABCDABABCDABCDABDE
+                S1 = BBCDABCD
+                S2 = BBCDABBCD
+                        </code></pre>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Z-функция</h4>
+                <p>$z[i]$ — наибольший общий префикс строки <br>и ее $i$-го суффикса.</p>
+                <p><a target="_blank" href="https://personal.utdallas.edu/~besp/demo/John2010/z-algorithm.htm">Визуализация</a>
+                </p>
+            </section>
+            <section>
+                <h4>Z-функция</h4>
+                <p><code>s="aaaaa"</code></p>
+                <p>Первый элемент не определен, может быть 0 или длинной строки. Возьмем 0.</p>
+                <p>Сравниваем строку <code>"aaaaa"</code> с 1-ым суффиксом: <code>"aaaa"</code> — у них общих 4 первых
+                    символа</p>
+                <p>Сравниваем строку <code>"aaaaa"</code> со 2-ым суффиксом: <code>"aaa"</code> — у них общих 3 первых
+                    символа</p>
+                <p>И так далее..</p>
+                <p>Итого получаем <code>z = [0, 4, 3, 2, 1]</code></p>
+            </section>
+            <section>
+                <h4>Z-функция</h4>
+                <p><code>s="aaabaab"</code></p>
+                <p>1-ый суффикс: <code>"aabaab"</code> — у них общих 2 первых символа</p>
+                <p>2-ой суффикс: <code>"abaab"</code> — у них общих только один символ</p>
+                <p>3-ий суффикс: <code>"baab"</code> — у них нет общих символов</p>
+                <p>И так далее..</p>
+                <p>Итого получаем <code>z = [0, 2, 1, 0, 2, 1, 0]</code></p>
+            </section>
+            <section>
+                <h4>Z-функция</h4>
+                <p>Чему равна z-функция от строки <code>s="abacaba"</code>?</p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, ., ., ., ., ., .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, ., ., ., ., .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, 1, ., ., ., .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, 1, 0, ., ., .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, 1, 0, 3, ., .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, 1, 0, 3, 0, .]</code></p>
+                <p class="fragment step-fade-in-then-out"><code>z = [0, 0, 1, 0, 3, 0, 1]</code></p>
+            </section>
+            <section>
+                <h4>Z-функция</h4>
+                <pre><code data-trim data-noescape class="python">
+def z(s: str) -> list:
+    n = len(s)
+    result = [0]*n
+    for i in range(1,len(s)):
+        suffix = s[i:]
+        k = 0
+        while i + k < n and s[k] == s[i+k]:
+            k = k + 1
+        result[i] = k
+    return result
+                        </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20z%28s%3A%20str%29%20-%3E%20list%3A%0A%20%20%20%20n%20%3D%20len%28s%29%0A%20%20%20%20result%20%3D%20%5B0%5D*n%0A%20%20%20%20for%20i%20in%20range%281,len%28s%29%29%3A%0A%20%20%20%20%20%20%20%20suffix%20%3D%20s%5Bi%3A%5D%0A%20%20%20%20%20%20%20%20k%20%3D%200%0A%20%20%20%20%20%20%20%20while%20i%20%2B%20k%20%3C%20n%20and%20s%5Bk%5D%20%3D%3D%20s%5Bi%2Bk%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20k%20%3D%20k%20%2B%201%0A%20%20%20%20%20%20%20%20result%5Bi%5D%20%3D%20k%0A%20%20%20%20return%20result%0A%0A%20%20%20%20%0Az%28'abababcabab'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=3&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>Оптимальный подсчет Z-функции</h1>
+            </section>
+            <section>
+                <h4>Оптимальный подсчет Z-функции</h4>
+                <p>$z$-блок ($z$-box) — подстрока с началом в $i$-ом символе и длиной $z[i]$.</p>
+                <p>Такая строка будет совпадать с началом строки.</p>
+                <p>Будем отслеживать $z$-блок с максимальной правой границей, обозначим $\textrm{left}$ и
+                    $\textrm{right}$ — начало и конец такого блока.</p>
+                <p>Изначально $\textrm{left}=0$ и $\textrm{right}=0$.</p>
+            </section>
+            <section>
+                <h4>Оптимальный подсчет Z-функции</h4>
+                <p>Пусть знаем $z[0]\ldots z[i-1]$. Найдем $z[i]$. Возможно два варианта:</p>
+                <ol>
+                    <li>$i>\textrm{right}$ — используем наивный способ, корректируя $\textrm{left}$ и $\textrm{right}$
+                    </li>
+                    <li>$i\leq\textrm{right}$ — тоже два варианта</li>
+                </ol>
+                <img src="Z-func.png" style="background-color:white;"/>
+            </section>
+            <section>
+                <h4>Оптимальный подсчет Z-функции</h4>
+                <p>Для определения варианта используем $z'=z[i-\textrm{left}]$</p>
+                <ol>
+                    <li>Если $z'\leq\textrm{right}-i$, то ответом будет $z'$</li>
+                    <li>Иначе $z'>\textrm{right}-i$, используем наивный способ, начиная с $\textrm{right}$.
+                        Изменяем $\textrm{left}$ и $\textrm{right}$
+                    </li>
+                </ol>
+                <img src="Z-func.png" style="background-color:white;"/>
+            </section>
+            <section>
+                <pre><code data-trim data-noescape class="python">
+def z_func(s):
+    z = [0] * len(s)
+    left, right = 0, 0
+    for i in range(1, len(s)):
+        z[i] = max(0, min(z[i - left], right - i))
+        while i + z[i] < len(s) and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        if i + z[i] > right:
+            left, right = i, i + z[i]
+    return z
+                        </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20z_func%28s%29%3A%0A%20%20%20%20z%20%3D%20%5B0%5D%20*%20len%28s%29%0A%20%20%20%20left,%20right%20%3D%200,%200%0A%20%20%20%20for%20i%20in%20range%281,%20len%28s%29%29%3A%0A%20%20%20%20%20%20%20%20z%5Bi%5D%20%3D%20max%280,%20min%28z%5Bi%20-%20left%5D,%20right%20-%20i%29%29%0A%20%20%20%20%20%20%20%20while%20i%20%2B%20z%5Bi%5D%20%3C%20len%28s%29%20and%20s%5Bz%5Bi%5D%5D%20%3D%3D%20s%5Bi%20%2B%20z%5Bi%5D%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20z%5Bi%5D%20%2B%3D%201%0A%20%20%20%20%20%20%20%20if%20i%20%2B%20z%5Bi%5D%20%3E%20right%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20left,%20right%20%3D%20i,%20i%20%2B%20z%5Bi%5D%0A%20%20%20%20return%20z%0A%0Az_func%28'abacaba'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=4&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+            <section>
+                <h4>Оптимальный подсчет Z-функции</h4>
+                <p>Сложность алгоритма $O(n)$</p>
+                <p>Каждый символ рассматривается не более двух раз: когда попадает в отрезок и при вычислении
+                    $z[i]$.</p>
+            </section>
+            <section>
+                <h4>Подсчет функции сдвига для алгоритма Бойра-Мура</h4>
+                <pre><code data-trim data-noescape data-line-numbers="1-13|2,3,12|1-13" class="python">
+def calc_strong_suf(pat):
+    strong_suf = [None for _ in range(len(pat))]
+    s = ''.join(reversed(pat))
+    z = [0] * len(s)
+    left, right = 0, 0
+    for i in range(1, len(s)):
+        z[i] = max(0, min(z[i - left], right - i))
+        while i + z[i] < len(s) and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        if i + z[i] > right:
+            left, right = i, i + z[i]
+        if strong_suf[z[i]] is None: strong_suf[z[i]] = i
+    return strong_suf
+                </code></pre>
+            </section>
+            <section>
+                <iframe width="800" height="500" frameborder="0"
+                        src="https://pythontutor.com/iframe-embed.html#code=def%20calc_strong_suf%28pat%29%3A%0A%20%20%20%20strong_suf%20%3D%20%5BNone%20for%20_%20in%20range%28len%28pat%29%29%5D%0A%20%20%20%20s%20%3D%20''.join%28reversed%28pat%29%29%0A%20%20%20%20z%20%3D%20%5B0%5D%20*%20len%28s%29%0A%20%20%20%20left,%20right%20%3D%200,%200%0A%20%20%20%20for%20i%20in%20range%281,%20len%28s%29%29%3A%0A%20%20%20%20%20%20%20%20z%5Bi%5D%20%3D%20max%280,%20min%28z%5Bi%20-%20left%5D,%20right%20-%20i%29%29%0A%20%20%20%20%20%20%20%20while%20i%20%2B%20z%5Bi%5D%20%3C%20len%28s%29%20and%20s%5Bz%5Bi%5D%5D%20%3D%3D%20s%5Bi%20%2B%20z%5Bi%5D%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20z%5Bi%5D%20%2B%3D%201%0A%20%20%20%20%20%20%20%20if%20i%20%2B%20z%5Bi%5D%20%3E%20right%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20left,%20right%20%3D%20i,%20i%20%2B%20z%5Bi%5D%0A%20%20%20%20%20%20%20%20if%20strong_suf%5Bz%5Bi%5D%5D%20is%20None%3A%20strong_suf%5Bz%5Bi%5D%5D%20%3D%20i%0A%20%20%20%20return%20strong_suf%0A%20%20%20%20%0Acalc_strong_suf%28'abacaba'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=60&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"></iframe>
+            </section>
+        </section>
+        <section>
+            <h4>Варианты Бойера-Мура</h4>
+            <h4>Апостолико-Джанкарло</h4>
+
+        </section>
+        <section>
+            <h4>Варианты Бойера-Мура</h4>
+            <h4>Турбо-Бойер-Мура</h4>
+
+        </section>
+    </div>
+</div>
+<script src="../dist/reveal.js"></script>
+<script src="../plugin/notes/notes.js"></script>
+<script src="../plugin/markdown/markdown.js"></script>
+<script src="../plugin/highlight/highlight.js"></script>
+<script src="../plugin/math/math.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.addEventListener('ready', function (event) {
+        document.dispatchEvent(new Event('reveal-ready'));
+    });
+    Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
+    });
+
+</script>
+</body>
+</html>
