@@ -22,6 +22,7 @@
 	display: inline;
 	}
 
+
     </style>
 </head>
 <body>
@@ -112,7 +113,7 @@ def prefix(string: str) -> list:
             </section>
             <section>
                 <p>Если <code class="python">s[i+1] == s[π[i]]</code>,<br>
-                    то <code class="python">π[i+1] == π[i] + 1</code></p>
+                    то <code class="python">π[i+1] = π[i] + 1</code></p>
                 \[
                 \underbrace{\overbrace{s_0 \quad s_1 \quad s_2}^{\pi[i]} \quad \overbrace{\ s_3\ }^{s_3=s_{i+1}} \
                 }_{\pi[i+1]=\pi[i]+1}
@@ -352,13 +353,10 @@ def calc_strong_suf(pat):
         </section>
         <section>
             <h4>Варианты Бойера-Мура</h4>
-            <h4>Апостолико-Джанкарло</h4>
-
-        </section>
-        <section>
-            <h4>Варианты Бойера-Мура</h4>
             <h4>Турбо-Бойер-Мура</h4>
-
+            <img src="tbm1.gif" style="background-color:white"/>
+            <br>
+            <img src="tbm2.gif" style="background-color:white"/>
         </section>
     </div>
 </div>
@@ -380,6 +378,7 @@ def calc_strong_suf(pat):
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
     });
+
 
 </script>
 </body>

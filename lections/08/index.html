@@ -59,11 +59,47 @@ input {
     font: inherit;
     vertical-align: baseline;
 }
-
-
-
-
-
+#binTableCalc {
+    font-size: 1.2rem;
+}
+#binTableCalc td.red {
+    color:red;
+}
+#binTableCalc td.rb {
+    border-right: 1px solid white;
+}
+#binTableCalc td.bb {
+    border-right: 1px solid white;
+    border-left: 1px solid white;
+}
+#binTableCalc td {
+    width: 2em;
+    text-align: center;
+}
+.over {
+    background-color:white;
+    color: black
+}
+table.accountTable td {
+    text-align: center;
+}
+.reveal .accountTable table {
+    margin: 0;
+}
+table.accountTable td.to_left {
+    text-align: left;
+}
+.accountTable .red {
+    color:red
+}
+.accountTable .greenCell {
+    background-color:green;
+    min-width:20px;
+}
+.accountTable .lightGreenCell {
+    background-color:lightgreen;
+    min-width:20px;
+}
     </style>
     <script>
         const L = 5
@@ -90,11 +126,6 @@ input {
             if(i<L)
                 setA(i, 1)
         }
-
-
-
-
-
     </script>
 </head>
 <body>
@@ -170,8 +201,8 @@ def selection_sort(v):
                 <p class="fragment step-fade-in-then-out">$T(n) = 1 + \ldots$</p>
                 <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + \ldots$</p>
                 <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + 4(n-1) + \ldots$</p>
-                <p class="fragment step-fade-in-then-out">$T(n) = 1 + (n-1) + 4(n-1) + 2((n-1) + (n-2) + \ldots +
-                    1)$</p>
+                <p class="fragment step-fade-in-then-out">\[T(n) = 1 + (n-1) + 4(n-1) + \\ 2((n-1) + (n-2) + \ldots +
+                    1)\]</p>
                 <p class="fragment step-fade-in-then-out">$T(n) = 4n - 4 + 2((n-1+1)(n-1)/2)$</p>
                 <p class="fragment step-fade-in-then-out">$T(n) = 4n - 4 + n^2 -n$</p>
                 <p class="fragment step-fade-in-then-out">$T(n) = n^2 -4n-4$</p>
@@ -301,6 +332,8 @@ def inc(A):
             </section>
             <section>
                 <h4>Стековые операции (Last In – First Out)</h4>
+                <p>Всего <span id="stackN">0</span> операций, общая сложность <span id="stackT">0</span>, средняя <span
+                        id="stackC">—</span>.</p>
                 <table class="stack">
                     <tr>
                         <td id="t0">↓Top</td>
@@ -325,12 +358,22 @@ def inc(A):
                 <script>
                     let stackI = 0
                     const stackL = 7
+                    let stackNV = 0
+                    let stackNT = 0
+                    const setStack = () => {
+                        stackN.innerHTML = stackNV
+                        stackT.innerHTML = stackNT
+                        stackC.innerHTML = stackNV===0?'—':Math.round(stackNT*10/stackNV)/10
+                    }
                     const push = () => {
                         if(stackI>=stackL) return;
                         document.getElementById('t'+stackI).innerHTML = ''
                         document.getElementById('v'+stackI).innerHTML = stackPushValue.value
                         stackI++;
                         document.getElementById('t'+stackI).innerHTML = '↓Top'
+                        stackNV++;
+                        stackNT++;
+                        setStack()
                     }
                     const pop = () => {
                         if(stackI<=0) return;
@@ -339,6 +382,9 @@ def inc(A):
                         popValue.innerHTML = document.getElementById('v'+stackI).innerHTML
                         document.getElementById('v'+stackI).innerHTML = ''
                         document.getElementById('t'+stackI).innerHTML = '↓Top'
+                        stackNV++;
+                        stackNT++;
+                        setStack()
                     }
                     const _pop = () => {
                         if(stackI<=0) return;
@@ -347,18 +393,16 @@ def inc(A):
                         multiValue.innerHTML = (multiValue.innerHTML==''?'':multiValue.innerHTML+',')+document.getElementById('v'+stackI).innerHTML
                         document.getElementById('v'+stackI).innerHTML = ''
                         document.getElementById('t'+stackI).innerHTML = '↓Top'
+                        stackNT++;
                     }
                     const multi = () => {
                         const n = stackMP.value
                         multiValue.innerHTML = ''
                         for(let i=0;i<n;i++)
                             _pop()
+                        stackNV++;
+                        setStack()
                     }
-
-
-
-
-
                 </script>
                 <ul>
                     <li><span class='stackBut' id="push" onclick="push()">Push</span>: <input id="stackPushValue"
@@ -448,6 +492,333 @@ def MultiPop(S, k):
                 \[T(n)/n = O(nk)/n = O(k)\]
             </section>
         </section>
+        <section>
+            <section>
+                <h4>Бинарный счетчик (binary counter)</h4>
+                <ul>
+                    <li>Счетчик имеет длину $L$ бит (может принимать $2^L$ значений)</li>
+                    <li>Поддерживает операцию Increment, которая увеличиваетего значение на единицу</li>
+                    <li>Начальное значение счетчика — 0</li>
+                </ul>
+            </section>
+            <section>
+                <script>
+                A2 = Array.apply(null, Array(L)).map(i=>0)
+                const inc2 = () => {
+                    let i = 0
+                    while(i<L && A2[i]==1) {
+                        A2[i] = 0
+                        i = i + 1
+                    }
+                    if(i<L)
+                        A2[i] = 1
+                    return [i + 1, A2]
+                }
+                const drawLine = (i,s) => {
+                    let r = `<tr> \
+                    <td class="rb">${i+1}</td> \
+                    <td>0</td> \
+                    <td>..</td>`
+                    const [t,a] = inc2()
+                    for(let j=4;j>=0;j--)
+                        r += `<td class='${j<t?'red':''}'>${a[j]}</td>`
+                    r += `<td class="bb">${t}</td> \
+                    <td>${s+t}</td> \
+                    </tr>`
+                    binTableCalc.innerHTML += r
+                    return t
+                }
+                window.onload = () => {
+                    let s = 0
+                    for(let i=0;i<16;i++)
+                        s += drawLine(i, s)
+                }
+                </script>
+                <h4>Бинарный счетчик</h4>
+                <div class="r-stack">
+                    <table class="fragment" id="binTableCalc">
+                        <thead>
+                        <tr>
+                            <td class="rb">N</td>
+                            <td>A[7]</td>
+                            <td>..</td>
+                            <td>A[4]</td>
+                            <td>A[3]</td>
+                            <td>A[2]</td>
+                            <td>A[1]</td>
+                            <td>A[0]</td>
+                            <td class="bb">S</td>
+                            <td>$\Sigma$</td>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div class="over fragment step-fade-in-then-out">Какова амортизированная стоимость выполнения
+                        функции Increment (среднее время в худшем случае)?
+                    </div>
+                    <div class="over fragment step-fade-in-then-out">Оценим сверху время $T(n)$ выполнения $n$ операций
+                        Increment
+                    </div>
+                    <div class="over fragment step-fade-in-then-out">
+                        <p>Можно заметить, что</p>
+                        <p>время выполнения $n$ операций</p>
+                        \[2n\geq T(n)\]
+                    </div>
+                    <div class="fragment step-fade-in-then-out">
+                        <div style="display: flex; justify-content:space-between; width: 700px; padding: 0 0 0 80px;">
+                            <div class="over">$n$</div>
+                            <div class="over">$T(n)$</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h4>Групповой анализ бинарного счетчика</h4>
+                <ul>
+                    <li>Бит 0 изменяется $n$ раз</li>
+                    <li>Бит 1 изменяется $\lfloor\frac{n}{2}\rfloor$ раз</li>
+                    <li>Бит 2 изменяется $\lfloor\frac{n}{4}\rfloor$ раз</li>
+                    <li>..</li>
+                    <li>Бит $L-1$ изменяется $\lfloor\frac{n}{2^{L-1}}\rfloor$ раз</li>
+                </ul>
+                \[T(n)=n+\frac{n}{2}+\frac{n}{4}+...+\frac{n}{2^{L-1}} = \\
+                = n+n=2n\]
+            </section>
+            <section>
+                <h4>Групповой анализ бинарного счетчика</h4>
+                \[T(n)=O(n)\]
+                <p>Средняя (амортизированная) стоимость одной операции Increment</p>
+                \[O(n)/n = O(1)\]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Обработчик с накопителем</h4>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def add_to_buffer(value):
+    buffer[count] = value
+    count = count + 1
+    if count == M:
+        for i in range(M):
+            packet[i] = buffer[i]
+        count = 0
+                </code></pre>
+            </section>
+            <section>
+                <h4>Групповой анализ обработчика с накопителем</h4>
+                <p>Обозначим через $c_i$ количество операции, выполняемых
+                    на $i$-ом вызове <code>add_to_buffer</code></p>
+                \[c_i=\begin{cases}
+                M + 3, & \quad если \ i\%M=0, \\
+                2, & \quad иначе.
+                \end{cases} \]
+            </section>
+            <section>
+                <h4>Обработчик с накопителем</h4>
+                <p>Тогда оценка сверху времени $T(n)$ выполнения $n$ операций <code>add_to_buffer</code> есть</p>
+                \[T(n) = c_1 + c_2 + \cdots + c_n < 2n + \frac{n(3+M)}{M} = \\
+                2n + 3n + M = 5n+M\]
+            </section>
+            <section>
+                <h4>Обработчик с накопителем</h4>
+                <p>Оценка сверху времени $T(n)$ выполнения $n$ операций <code>add_to_buffer</code></p>
+                \[T(n) = 5n+M = O(n+M)\]
+                <p>Амортизированная стоимость одной операции <code>add_to_buffer</code></p>
+                \[\frac{T(n)}{n} = \frac{5n+M}{n} = O(1)\]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p><strong>Динамическая таблица (Dynamic table, dynamic array,
+                    growable array)</strong> – это массив поддерживающий вставку
+                    и удаление элементов и динамически изменяющий
+                    свой размер до необходимого значения</p>
+                <p>Поддерживаемые операции:</p>
+                <ul>
+                    <li>Insert(T, x)</li>
+                    <li>Delete(T, x)</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>При выполнении операции Insert размер массива увеличивается</p>
+                <p>Как увеличивать размер массива?</p>
+                <p><strong>Аддитивная схема</strong> – текущий размер массива увеличивается
+                    на $k$ ячеек (по арифметической прогрессии)</p>
+                <p><strong>Мультипликативная схема</strong> – текущий размер массива
+                    увеличивается в $k$ раз (по геометрической прогрессии)</p>
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>Примеры реализации:</p>
+                <table>
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <ul>
+                                <li><strong>С++:</strong> std::vector</li>
+                                <li><strong>Java:</strong> ArrayList</li>
+                                <li><strong>.NET 2.0:</strong> List<></li>
+                                <li><strong>Python:</strong> list</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <img src="dyn_array.jpg" width="150"/>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <pre><code data-trim data-noescape data-line-numbers class="python">
+def insert(x):
+    if Size == 0:
+        Size = 1
+        Table = AllocateMemory(Size)
+        k = 0
+    else if k == Size:
+        Size = Size * 2
+        NewTable = AllocateMemory(Size)
+        for i in range(k):
+            NewTable[i] = Table[i]
+        FreeMemory(Table)
+        Table = NewTable
+    Table[k] = x
+    k = k + 1
+                </code></pre>
+                <a target="_blank"
+                   href="https://pythontutor.com/render.html#code=def%20AllocateMemory%28x%29%3A%0A%20%20%20%20print%28x%29%0A%20%20%20%20return%20%5B0%5D*x%0A%0Adef%20FreeMemory%28x%29%3A%0A%20%20%20%20pass%0A%0A%0ASize%20%3D%200%0ATable%20%3D%20%5B%5D%0Ak%20%3D%200%0A%0Adef%20insert%28x%29%3A%0A%20%20%20%20global%20Size,%20k,%20Table%0A%20%20%20%20if%20Size%20%3D%3D%200%3A%0A%20%20%20%20%20%20%20%20Size%20%3D%201%0A%20%20%20%20%20%20%20%20Table%20%3D%20AllocateMemory%28Size%29%0A%20%20%20%20%20%20%20%20k%20%3D%200%0A%20%20%20%20elif%20k%20%3D%3D%20Size%3A%0A%20%20%20%20%20%20%20%20Size%20%3D%20Size%20*%202%0A%20%20%20%20%20%20%20%20NewTable%20%3D%20AllocateMemory%28Size%29%0A%20%20%20%20%20%20%20%20for%20i%20in%20range%28k%29%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20NewTable%5Bi%5D%20%3D%20Table%5Bi%5D%0A%20%20%20%20%20%20%20%20FreeMemory%28Table%29%0A%20%20%20%20%20%20%20%20Table%20%3D%20NewTable%0A%20%20%20%20Table%5Bk%5D%20%3D%20x%0A%20%20%20%20k%20%3D%20k%20%2B%201%0A%20%20%20%20%0Ainsert%281%29%20%20%20%20%0Ainsert%282%29%20%20%20%20%0Ainsert%283%29%20%20%20%20%0Ainsert%284%29%20%20%20%20%0Ainsert%285%29%20%20%20%20%0Ainsert%286%29&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false">Tutor</a>
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>Проведем амортизационный анализ времени $T(n)$
+                    выполнения последовательности из $n$ операций Insert</p>
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>Обозначим через $c_i$ количество операции, выполняемых
+                    на $i$-ом вызове Insert</p>
+                \[c_i=\begin{cases}
+                i & \quad если \ i-1 \ степень \ 2, \\
+                1 & \quad иначе.
+                \end{cases} \]
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>Тогда оценка сверху времени $T(n)$ выполнения
+                    $n$ операций Insert есть</p>
+                \[T(n) = c_1 + c_2 + \cdots + c_n \leq \\n + 2^0 + 2^1 + 2^2 + \cdots + 2^{\lfloor\log_2 n\rfloor} \]
+                \[T(n) < n + 2n = 3n\]
+            </section>
+            <section>
+                <h4>Динамические таблицы (dynamic tables)</h4>
+                <p>Оценка сверху амортизированной сложности одной
+                    операции Insert есть</p>
+                \[T_{Insert} = \frac{T(n)}{n} = \frac{3n}{n} = 3 = O(1)\]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                <p>Групповой анализ хорошо работает, когда мы впрямую можем оценить сколько будет "стоить" набор
+                    операций.</p>
+                <p>Также есть проблемы, если используется много операций.</p>
+                <p>Развитием является метод бухгалтерского учета</p>
+            </section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                <p>За каждую операция мы "платим" фиксированную стоимость.</p>
+                <p>Если в действительности "тратим" меньше, то остаток идет на наш "баланс".</p>
+                <p>Если больше, то сумма снимается с баланса.</p>
+                <p>Баланс не может становиться отрицательным.</p>
+                <p>Какую стоимость платить?</p>
+            </section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                <table class="accountTable">
+                    <thead>
+                    <tr>
+                        <td>i</td>
+                        <td>op</td>
+                        <td>result</td>
+                        <td>charge</td>
+                        <td>$C_i$</td>
+                        <td>$\Delta B$</td>
+                        <td>$B$</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>append(6)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td class="red">-1</td>
+                        <td class="red">-1</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                <table class="accountTable">
+                    <thead>
+                    <tr>
+                        <td>i</td>
+                        <td>op</td>
+                        <td>result</td>
+                        <td>charge</td>
+                        <td>$C_i$</td>
+                        <td>$\Delta B$</td>
+                        <td>$B$</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>append(6)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>2</td>
+                        <td>2</td>
+                        <td class="red">-</td>
+                        <td class="red">0</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td class="red">-1</td>
+                        <td class="red">-1</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+        </section>
     </div>
 </div>
 <script src="../dist/reveal.js"></script>
@@ -468,11 +839,6 @@ def MultiPop(S, k):
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
     });
-
-
-
-
-
 </script>
 </body>
 </html>
