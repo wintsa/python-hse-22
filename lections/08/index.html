@@ -83,6 +83,15 @@ input {
 table.accountTable td {
     text-align: center;
 }
+table.accountTable > thead > tr > td,
+table.accountTable > tbody > tr > td {
+    border-bottom: 0;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+}
+table.accountTable table td {
+    border: 1px solid black;
+}
 .reveal .accountTable table {
     margin: 0;
 }
@@ -90,7 +99,10 @@ table.accountTable td.to_left {
     text-align: left;
 }
 .accountTable .red {
-    color:red
+    color:red;
+}
+.accountTable .green {
+    color:green;
 }
 .accountTable .greenCell {
     background-color:green;
@@ -100,6 +112,10 @@ table.accountTable td.to_left {
     background-color:lightgreen;
     min-width:20px;
 }
+
+
+
+
     </style>
     <script>
         const L = 5
@@ -126,6 +142,8 @@ table.accountTable td.to_left {
             if(i<L)
                 setA(i, 1)
         }
+
+
     </script>
 </head>
 <body>
@@ -403,6 +421,8 @@ def inc(A):
                         stackNV++;
                         setStack()
                     }
+
+
                 </script>
                 <ul>
                     <li><span class='stackBut' id="push" onclick="push()">Push</span>: <input id="stackPushValue"
@@ -533,6 +553,8 @@ def MultiPop(S, k):
                     for(let i=0;i<16;i++)
                         s += drawLine(i, s)
                 }
+
+
                 </script>
                 <h4>Бинарный счетчик</h4>
                 <div class="r-stack">
@@ -818,6 +840,686 @@ def insert(x):
                     </tbody>
                 </table>
             </section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                <table class="accountTable" style="font-size: 16px">
+                    <thead>
+                    <tr>
+                        <td>i</td>
+                        <td>op</td>
+                        <td>result</td>
+                        <td>charge</td>
+                        <td>$C_i$</td>
+                        <td>$\Delta B$</td>
+                        <td>$B$</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>append(6)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td class="green">+1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td class="">-</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>append(8)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td class="green">+2</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>append(1)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>5</td>
+                        <td class="red">-2</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>append(3)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td class="green">+2</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>append(4)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td class="green">+2</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>append(7)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td class="green">+2</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>9</td>
+                        <td class="red">-6</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h4>Метод бухгалтерского учета</h4>
+                \[T(n)<3n=O(n)\]
+                \[\frac{T(n)}{n}=O(1)\]
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <p>Функция $\Phi$ — "потенциальная энергия", накопленной структурой данных за счет "дешевых"
+                    операций.</p>
+                <p>Её значения не отрицательны.</p>
+                <p>Пусть $o$ — некоторая отдельная операция из серии, $S_{before}$ — состояние структуры до этой
+                    операции, а $S_{after}$ — после неё. Тогда амортизированная сложность операции $o$ равна
+                    \[
+                    T_{amortized}(o)=T_{actual}(o)+\Phi(S_{after})-\Phi(S_{before})
+                    \]
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <p>Пусть у нас есть $n$ операций $O = o_1, o_2, \ldots, o_n$.</p>
+                \[T_{amortized}(O) = \sum_{i=0}^{n} T_{amortized}(o_i)\]
+                \[T_{actual}(O) = \sum_{i=0}^{n} T_{actual}(o_i)\]
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                \[
+                T_{amortized}(O) = \sum_{i=1}^{n} (T_{actual}(o_i)+\Phi(S_i)-\Phi(S_{i-1})) = \\
+                T_{actual}(O) + \Phi(S_n) - \Phi(S_0)
+                \]
+                \[
+                T_{actual}(O) \leq T_{amortized}(O)
+                \]
+            </section>
+            <section>
+                <h4>Метод потенциалов для стека</h4>
+                <p>Выберем в качестве $\Phi(S_i) = k$ — число элементов в стеке.</p>
+                <p>Оценим $T_{amortized}(o)=T_{actual}(o)+\Phi(S_{after})-\Phi(S_{before})$</p>
+                <p>Для операции <code>push</code> $T_{amortized} = 1 + k + 1 - k = 2$</p>
+                <p>Для операции <code>pop</code> $T_{amortized} = 1 + k - 1 - k = 0$</p>
+                <p>Для операции <code>multi_pop</code> $T_{amortized} = 0$</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <table class="accountTable" style="font-size: 16px">
+                    <thead>
+                    <tr>
+                        <td>i</td>
+                        <td>op</td>
+                        <td>result</td>
+                        <td>$C_i$</td>
+                        <td>$\Phi(S)$</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>append(6)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>2</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>append(8)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>append(1)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>append(3)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>5</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>append(4)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>append(7)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="greenCell">2</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>append(5)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">5</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>9</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <p>$\Phi(S_0)=0$ и $\Phi(S_i)=2*k-\textrm{Size}$</p>
+                <table class="accountTable" style="font-size: 16px">
+                    <thead>
+                    <tr>
+                        <td>i</td>
+                        <td>op</td>
+                        <td>result</td>
+                        <td>$C_i$</td>
+                        <td>$\Phi(S_i)$</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>append(6)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>2</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>append(8)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>3</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>append(1)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>append(3)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>5</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>append(4)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>append(7)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>append(2)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="greenCell">2</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>1</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>append(5)</td>
+                        <td class="to_left">
+                            <table>
+                                <tr>
+                                    <td class="greenCell">6</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">8</td>
+                                    <td class="greenCell">1</td>
+                                    <td class="greenCell">3</td>
+                                    <td class="greenCell">4</td>
+                                    <td class="greenCell">7</td>
+                                    <td class="greenCell">2</td>
+                                    <td class="greenCell">5</td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                    <td class="lightGreenCell"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>9</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <p>Два варианта:</p>
+                <ul>
+                    <li>Массив не расширяется:
+                        \[
+                        T_{amortized}(o_i) = T_{actual}(o_i) + \Phi(S_i) - \Phi(S_{i-1}) = \\
+                        1 + 2 * i - \textrm{Size} - (2 * (i-1) - \textrm{Size}) = 3
+                        \]
+                    </li>
+                    <li>Массив расширяется ($\textrm{Size}=i$):
+                        \[
+                        T_{amortized}(o_i) = [i + 1] + [2 * (i + 1) - (2*i)] - \\
+                        - [2 * i - i] = 3i+3-2i-i = 3
+                        \]
+                    </li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <h4>Бинарный счетчик</h4>
+                <p>Какую выбрать $\Phi(S)$?</p>
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <h4>Бинарный счетчик</h4>
+                <p>Пусть $\Phi(S) = R(S)$ — число единиц (вес Хэмминга)</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <h4>Префиксная функция</h4>
+            </section>
+            <section>
+                <h4>Метод потенциалов</h4>
+                <h4>Z-функция</h4>
+            </section>
         </section>
     </div>
 </div>
@@ -839,6 +1541,8 @@ def insert(x):
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
     });
+
+
 </script>
 </body>
 </html>
