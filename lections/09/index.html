@@ -1,0 +1,565 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 09: Машина Тьюринга</title>
+
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="../plugin/highlight/monokai.css">
+    <style>
+.reveal .slides section .fragment.step-fade-in-then-out {
+	opacity: 0;
+	display: none;
+	}
+.reveal .slides section .fragment.step-fade-in-then-out.current-fragment {
+	opacity: 1;
+	display: inline;
+	}
+#postTable {
+    font-size: 1rem;
+}
+#postCode {
+  background-color: transparent;
+  font-size: 13px;
+  line-height: 16px;
+
+  margin: 0;
+  display: block;
+  position: absolute;
+  z-index: 2;
+  border: 2px solid #74637f;
+  border-radius: 0;
+  overflow: auto;
+  resize: none;
+}
+
+.markLine {
+  width: 10px;
+  height: 10px;
+  line-height: 16px;
+  border-radius: 50%;
+  font-size: 13px;
+  background: red;
+  position: relative;
+  top: 3px;
+  left: -30px;
+  z-index: 10;
+}
+
+.backdrop, textarea {
+  width: 460px;
+  height: 180px;
+  max-width: 460px;
+  max-height: 180px;
+  min-width: 460px;
+  min-height: 180px;
+}
+.container {
+  width: 495px;
+  height: 190px;
+}
+.backdrop, textarea {
+    padding-left: 35px;
+    padding-top: 12px;
+}
+.highlights, textarea {
+    font: 13px 'Open Sans', sans-serif;
+    letter-spacing: 1px;
+}
+
+.container {
+  display: block;
+  margin: 0 auto;
+  -webkit-text-size-adjust: none;
+}
+
+.backdrop {
+  background: url(http://i.imgur.com/2cOaJ.png);
+  background-attachment: local;
+  background-repeat: no-repeat;
+  position: absolute;
+  z-index: 1;
+  border: 2px solid #685972;
+  background-color: #fff;
+  overflow: auto;
+  pointer-events: none;
+}
+
+.highlights {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+}
+   </style>
+    <script>
+        const postWidth = 10
+        let postModel = new Array(200).fill(0)
+        let postPosition = 100
+        let postCommandLine = 1
+        const change = i => {
+            postModel[i] = 1 - postModel[i]
+            draw()
+        }
+        const left = () => {
+            postPosition--
+            draw()
+        }
+        const right = () => {
+            postPosition++
+            draw()
+        }
+        const command = () => postCode.value.split('\n')[postCommandLine - 1]
+        const move = lineNum => {
+            postCommandLine = parseInt(lineNum)
+            handleInput()
+        }
+        const error = () => {
+            alert('incorrect command '+command()+' at line '+postCommandLine)
+        }
+        const reset = () => {
+            postCommandLine = 1
+            handleInput()
+        }
+        const step = () => {
+            let cmdLine = command()
+            let cmd = cmdLine[0]
+            let jump = cmdLine.substr(1)
+            if(cmd==='V' && postModel[postPosition]===0) {
+                postModel[postPosition] = 1
+                move(jump)
+            } else if(cmd==='X' && postModel[postPosition]===1) {
+                postModel[postPosition] = 0
+                move(jump)
+            } else if(cmd==='L' || cmd==='l' || cmd==='←') {
+                postPosition--
+                move(jump)
+            } else if(cmd==='R' || cmd==='r' || cmd==='→') {
+                postPosition++
+                move(jump)
+            } else if(cmd==='?') {
+                let lines = jump.split(/;|:|,/)
+                if(lines.length<2) {
+                    error()
+                    exit
+                }
+                let line = lines[postModel[postPosition]]
+                move(line)
+            } else if(cmd==='!') {
+                alert('Stop!')
+            } else {
+                error()
+            }
+            draw()
+        }
+        const draw = () => {
+            let postHeader = ''
+            let postBody = ''
+            for(let i=0;i<postWidth;i++) {
+                postHeader += i===0?`<td onClick='left()'>&lt;</td>`:'<td></td>'
+                postBody += `<td onClick='change(${postPosition-postWidth+i})'>${postModel[postPosition-postWidth+i]}</td>`
+            }
+            postHeader += `<td class='postCaret'>_</td>`
+            postBody += `<td onClick='change(${postPosition})'>${postModel[postPosition]}</td>`
+            for(let i=1;i<=postWidth;i++) {
+                postHeader += i===postWidth?`<td onClick='right()'>&gt;</td>`:'<td></td>'
+                postBody += `<td onClick='change(${postPosition+i})'>${postModel[postPosition+i]}</td>`
+            }
+            postTable.innerHTML = `<table class='post'><thead><tr>${postHeader}</tr></thead><tbody><tr>${postBody}</tr></tbody></table>`
+
+        }
+        const applyHighlights = text => {
+            let t = text.replace(/\n$/g, '\n\n')
+            let ts = t.split('\n')
+            if(ts.length>=postCommandLine)
+                ts[postCommandLine-1] = '<div class="markLine"></div>' + ts[postCommandLine-1]
+            return ts.join('\n')
+        }
+        const handleInput = () => postMark.innerHTML = applyHighlights(postCode.value)
+        const handleScroll = () => {
+            backDrop.scrollTop = postCode.scrollTop
+            backDrop.scrollLeft = postCode.scrollLeft
+        }
+        const showCode = code => {
+            postCode.value = code
+            reset()
+        }
+        window.onload = () => {
+            draw()
+            handleInput()
+        }
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h3>Лекция 09: Машина Тьюринга</h3>
+            <div>&nbsp;</div>
+            <h4>Александр Дерендяев</h4>
+        </section>
+        <section>
+            <section>
+                <h1>Нормальные алгорифмы Маркова</h1>
+            </section>
+            <section>
+                <p>Теория нормальных алгоритмов была разработана советским математиком Андреем Андреевичем Марковым в
+                    конце 1940-х годов</p>
+                <p>При изучении разрешимости некоторых задач алгебры, он предложил новую модель вычислений, которую
+                    назвал нормальными алгорифмами</p>
+            </section>
+            <section>
+                <p>Нормальные алгорифмы Маркова (НАМ) — это строгая математическая форма записи алгоритмов обработки
+                    символьных строк, которую можно использовать для доказательства разрешимости или неразрешимости
+                    различных задач</p>
+                <p>Эти алгоритмы представляют собой некоторые правила по переработке слов в каком-либо алфавите</p>
+                <p>При этом исходные данные и результат работы алгоритма являются словами в этом алфавите</p>
+            </section>
+            <section>
+                <p>Марков предположил, что любой алгоритм можно записать как НАМ</p>
+                <p>В отличие от машин Тьюринга НАМ — это "чистый” алгоритм, который не связан ни с каким "аппаратным
+                    обеспечением” (лентой,кареткой, ..)</p>
+                <p>НАМ преобразует одно слово (цепочку символов некоторого алфавита) в другое и задается
+                    <em>алфавитом</em> и <em>системой подстановок</em></em></p>
+            </section>
+            <section>
+                <p>Алфавитом будем называть любое непустое множество</p>
+                <p>Его элементы называются буквами, а любая последовательность букв – словами в данном алфавите</p>
+                <p>Для удобства рассуждений допускается пустое слово, которые обозначим $\Lambda$</p>
+                <p>Слова будем обозначать буквами $Р$, $Q$, $R$</p>
+            </section>
+            <section>
+                <p>Формулой подстановки называется запись вида $\alpha\to\beta$, где $\alpha$ и $\beta$ – любые слова
+                    (возможно, и пустые).</p>
+                <p>При этом $\alpha$ называется левой частью формулы, а $\beta$ – правой частью.</p>
+                <p>Сама подстановка (как действие) задается формулой подстановки и применяется к некоторому слову
+                    $Р$.</p>
+            </section>
+            <section>
+                <p>Суть операции сводится к тому, что в слове $Р$ отыскивается часть, совпадающая с левой частью этой
+                    формулы (т.е. с α), и она заменяется на правую часть формулы (т.е. на β). При этом остальные части
+                    слова Р (слева и справа от $\alpha$) не меняются. Получившееся слово $R$ называют результатом
+                    подстановки.</p>
+                <p>Условно это можно изобразить так:</p>
+                <img src="markov01.png">
+            </section>
+            <section>
+                <p>Формулой подстановки может быть <em>простой</em> ($\to$) или <em>заключительной</em>($\to\cdot$)</p>
+                <p>Заключительные формулы завершают преобразование</p>
+            </section>
+            <section>
+                $|*abc$
+                \[\begin{cases}
+                |b\ \ \to\ ba| \\
+                ab\ \to\ ba \\
+                b\ \ \ \to \Lambda\\
+                *|\ \ \to\ b* \\
+                *\ \ \ \to\ c \\
+                |c\ \ \to\ c \\
+                ac\ \to\ c| \\
+                c\ \ \ \to\cdot \Lambda
+                \end{cases}\]
+                <p class="fragment step-fade-in-then-out">$|*||$</p>
+                <p class="fragment step-fade-in-then-out">$|b*|$</p>
+                <p class="fragment step-fade-in-then-out">$ba|*|$</p>
+                <p class="fragment step-fade-in-then-out">$a|*|$</p>
+                <p class="fragment step-fade-in-then-out">$a|b*$</p>
+                <p class="fragment step-fade-in-then-out">$aba|*$</p>
+                <p class="fragment step-fade-in-then-out">$baa|*$</p>
+                <p class="fragment step-fade-in-then-out">$aa|*$</p>
+                <p class="fragment step-fade-in-then-out">$aa|c$</p>
+                <p class="fragment step-fade-in-then-out">$aac$</p>
+                <p class="fragment step-fade-in-then-out">$ac|$</p>
+                <p class="fragment step-fade-in-then-out">$c||$</p>
+                <p class="fragment step-fade-in-then-out">$||$</p>
+            </section>
+            <section>
+                $0, 1, |$
+                \[\begin{cases}
+                1\ \ \to\ 0| \\
+                |0\ \to\ 0|| \\
+                0\ \ \to \Lambda \\
+                \Lambda\ \to\cdot\Lambda
+                \end{cases}\]
+                <p class="fragment step-fade-in-then-out">$101$</p>
+                <p class="fragment step-fade-in-then-out">$0|01$</p>
+                <p class="fragment step-fade-in-then-out">$0|00|$</p>
+                <p class="fragment step-fade-in-then-out">$00||0|$</p>
+                <p class="fragment step-fade-in-then-out">$00|0|||$</p>
+                <p class="fragment step-fade-in-then-out">$000|||||$</p>
+                <p class="fragment step-fade-in-then-out">$00|||||$</p>
+                <p class="fragment step-fade-in-then-out">$0|||||$</p>
+                <p class="fragment step-fade-in-then-out">$|||||$</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>Машина Поста</h1>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p><strong>Машина Поста</strong> — абстрактная вычислительная машина, созданная для уточнения понятия
+                    алгоритма</p>
+                <p>Более проста чем машина Тьюринга, но алгоритмически эквивалентна</p>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p>Бесконечная лента из ячеек (каждая в одном из двух состояний) + каретка над этой лентой</p>
+                <p>Текущее <em>состояние машины Поста</em> описывается состоянием ленты и положением каретки. <em>Состояние
+                    ленты</em> – информация о том, какие секции пусты, а какие отмечены. <em>Шаг</em> – это движение
+                    каретки на одну ячейку влево или вправо. Кареткой управляет программа, состоящая из строк команд.
+                </p>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p>Каждая команда имеет следующий синтаксис:</p>
+                <p><code>i K j</code></p>
+                <p>где <code>i</code> — номер команды, <code>K</code> – действие каретки, <code>j</code> — номер
+                    следующей команды (отсылка).
+                </p>
+                <p>Типы команд</p>
+            </section>
+            <section>
+                <ul>
+                    <li>$V j$ — поставить метку, перейти к $j$-й строке программы</li>
+                    <li>$X j$ — стереть метку, перейти к $j$-й строке программы</li>
+                    <li>$← j$ — сдвинуться влево, перейти к $j$-й строке программы</li>
+                    <li>$→ j$ — сдвинуться вправо, перейти к $j$-й строке программы</li>
+                    <li>$? j_1; j_2$ — если в ячейке нет метки, то перейти к $j_1$-й строке программы, иначе перейти к
+                        $j_2$-й строке программы
+                    </li>
+                    <li>$!$ – конец программы (стоп)</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p>Варианты окончания выполнения программы:</p>
+                <ul>
+                    <li>Команда «стоп»</li>
+                    <li>Выполнение недопустимой команды</li>
+                    <li>Уход в бесконечность, зацикливание</li>
+                </ul>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p><em>Программой машины Поста</em> будем называть конечный список команд машины Поста, обладающий
+                    следующими двумя свойствами:
+                </p>
+                <ol>
+                    <li>На первом месте в этом списке стоит команда с номером 1, на втором месте — команда с номером 2 и
+                        т.д.;
+                    </li>
+                    <li>Отсылка любой из команд списка совпадает с номером некоторой команды списка.</li>
+                </ol>
+            </section>
+            <section>
+                <h4>Пример работы машины Поста:</h4>
+                <p><em>Задача 1:</em> увеличить число 3 на единицу.</p>
+                <p>Целое положительное число на ленте машины Поста представимо идущими подряд метками, которых на одну
+                    больше, чем кодируемое число. Это связано с тем, что одна метка обозначает ноль, а уже две –
+                    единицу, и т.д.</p>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <div id="postTable"></div>
+                <div class="container">
+                    <div class="backdrop" id="backDrop">
+                        <div class="highlights" id="postMark">
+                        </div>
+                    </div>
+                    <textarea contenteditable="true" id="postCode" rows="10" cols="30" oninput="handleInput()"
+                              onscroll="handleScroll()"></textarea>
+                </div>
+                <div>
+                    <button onclick="step()">Step</button>
+                    <button onclick="reset()">Reset</button>
+                </div>
+                <div>
+                    <button onclick="showCode(`R2
+?1;3
+L4
+V5
+!`)">inc
+                    </button>
+                    <button onclick="showCode(`X2
+R3
+?2;4
+L5
+V6
+!`)">clear
+                    </button>
+                    <button onclick="showCode(`L2
+?3,4
+!
+X5
+L6
+?7:5
+V8
+R9
+?10:8
+!`)">sum
+                    </button>
+                    <button onclick="showCode(`L2
+?1,3
+X4
+R5
+?4:6
+X7
+R8
+?9:1
+!`)">minus
+                    </button>
+                </div>
+            </section>
+            <section>
+                <h4>Машина Поста</h4>
+                <p><em>Задача 2:</em> стереть метку в текущей клетке и присоединить ее слева к группе меток,
+                    расположенных справа от каретки</p>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>Машина Тьюринга</h1>
+            </section>
+            <section>
+                <h4>Машина Тьюринга</h4>
+                <p>Cтрогое математическое построение, математический аппарат, созданный для решения определённых
+                    задач.</p>
+                <p>Абстрактный исполнитель, осуществляющий алгоритмический процесс, созданный для уточнения понятия
+                    алгоритма.
+                </p>
+            </section>
+            <section>
+                <h4>Машина Тьюринга состоит из:</h4>
+                <ul>
+                    <li>бесконечной ленты, разделенной на ячейки</li>
+                    <li>каретки (читающей и записывающей головки)</li>
+                    <li>программируемого автомата</li>
+                </ul>
+            </section>
+            <section>
+                <p>Автомат каждый раз “видит” только одну ячейку. В зависимости от того, какую букву он видит, а также в
+                    зависимости от своего состояния $q$ автомат может выполнять следующие действия:</p>
+                <ul>
+                    <li>записать новую букву в обозреваемую ячейку</li>
+                    <li>выполнить сдвиг по ленте на одну ячейку вправо/влево или остаться неподвижным</li>
+                    <li>перейти в новое состояние</li>
+                </ul>
+            </section>
+            <section>
+                <p>Конкретная машина Тьюринга задаётся:</p>
+                <ul>
+                    <li>Внешний алфавит: $A={a_0,a_1,\ldots,a_n}$</li>
+                    <li>Внутренний алфавит: $Q=\{q_0,q_1,\ldots,q_n\}$, $D=\{R,L,N\}$</li>
+                    <li>Набор правил: $q_ia_j\to q_{i1}a_{j1}d_k$</li>
+                </ul>
+                <p>Для каждой возможной конфигурации $q_i,a_j$ имеется ровно одно правило</p>
+                <p>Еще надо указать начальное и конечное состояния, начальную конфигурацию на ленте и расположение
+                    каретки</p>
+            </section>
+            <section>
+                <p>Лента (внешняя память)</p>
+                <p>В каждый момент времени на ленте записано конечное число непустых букв</p>
+                <p>Лента является конечной, но дополняется в любой момент ячейками слева и справа для записи новых
+                    непустых символов.</p>
+            </section>
+            <section>
+                <p>Пример машин Тьюринга</p>
+                <table>
+                    <thead>
+                    <tr>
+                        <td>$Q$\$A$</td>
+                        <td>$\sqcup$</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>b</td>
+                        <td>c0R</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>c</td>
+                        <td>d$\sqcup$R</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>d</td>
+                        <td>e1R</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>e</td>
+                        <td>b$\sqcup$R</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="fragment">Начальное состояние b, лента бесконечная из пробелов, конечного состояния нет</p>
+            </section>
+            <section>
+                <h4>Машина Тьюринга</h4>
+                <a href="https://turingmachine.io" target="_blank">Визуализация</a>
+            </section>
+        </section>
+        <section>
+            <section>
+                <h4>Разрешимость математики</h4>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/jP3ceURvIYc?start=1344"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </section>
+            <section>
+                <h4>Полнота по Тьюрингу</h4>
+                <p>Полнота по Тьюрингу — характеристика исполнителя в теории вычислимости, означающая возможность
+                    реализовать на нём любую вычислимую функцию.</p>
+                <p>Вычислимая функция — функция, вычислимая на машине Тьюринга.</p>
+            </section>
+            <section>
+                <h4>Полнота по Тьюрингу</h4>
+                <p>Один из естественных способов доказательства того, что алгоритмы вычисления, которые можно
+                    реализовать на одной машине, можно реализовать и на другой, — это имитация первой машины на
+                    второй.</p>
+                <p>На машине Тьюринга можно имитировать все другие исполнители, каким-либо образом реализующие процесс
+                    пошагового вычисления, в котором каждый шаг вычисления достаточно элементарен.</p>
+            </section>
+            <section>
+                <h4>Полнота по Тьюрингу</h4>
+                <p>В свою очередь, на различных абстрактных исполнителях можно имитировать машину Тьюринга. Исполнители,
+                    для которых это возможно, называются полными по Тьюрингу</p>
+            </section>
+        </section>
+    </div>
+</div>
+<script src="../dist/reveal.js"></script>
+<script src="../plugin/notes/notes.js"></script>
+<script src="../plugin/markdown/markdown.js"></script>
+<script src="../plugin/highlight/highlight.js"></script>
+<script src="../plugin/math/math.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.addEventListener('ready', function (event) {
+        document.dispatchEvent(new Event('reveal-ready'));
+    });
+    Reveal.initialize({
+        hash: true,
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.MathJax2]
+    });
+</script>
+</body>
+</html>
